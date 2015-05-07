@@ -28,10 +28,9 @@ document.body.appendChild( renderer.domElement );
 
 // Settings.
 camera.position.z = 5;
-scene.fog = new THREE.FogExp2( 0x0091D8, 0.002 );
+renderer.setClearColor(0x0091D8, 1); //'Sky color'
 
-renderer.setClearColor(scene.fog.color, 1);
-
+// Enable Shadows.
 renderer.shadowMapEnabled = true;
 renderer.shadowMapType = THREE.PCFSoftShadowMap;
 
@@ -49,8 +48,8 @@ plane.position.y -= 3; // Lower below sphere and arrow.
 scene.add(plane);
 
 // Initialise a sphere.
-var sphere_geometry = new THREE.SphereGeometry(1, 100, 100);
-var sphere_material = new THREE.MeshLambertMaterial({color: 0x00AA00});
+var sphere_geometry = new THREE.SphereGeometry(1, 50, 50);
+var sphere_material = new THREE.MeshPhongMaterial({color: 0x00AA00, shininess: 100});
 var sphere = new THREE.Mesh(sphere_geometry, sphere_material);
 scene.add(sphere);
 
@@ -72,23 +71,24 @@ cone.add(cylinder);
  Lighting
  ==============*/
 
-// Initialise a point light.
-var spotlight = new THREE.SpotLight(0xFFFFFF);
-spotlight.position.set(2, 2, 2);
-spotlight.lookAt(new THREE.Vector3(0, 0, 0));
-scene.add(spotlight);
-
 //Initialise ambient light
 light = new THREE.AmbientLight(0x666666);
 scene.add( light );
 
-spotlight.castShadow = true;
-spotlight.shadowDarkness = 0.75;
-//spotlight.shadowCameraVisible = true;
+
+var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 10, 90);
+spotLight.position.z = 5;
+spotLight.position.y = 5;
+spotLight.target.position.set(0, 0, 0);
+spotLight.shadowCameraNear	= 0.01;
+spotLight.castShadow		= true;
+spotLight.shadowDarkness	= 0.25;
+//spotLight.shadowCameraVisible	= true;
+scene.add(spotLight);
 
 plane.receiveShadow = true;
-cylinder.castShadow = true;
-cylinder.receiveShadow = true;
+sphere.castShadow = true;
+sphere.receiveShadow = true;
 cone.castShadow = true;
 cone.receiveShadow = true;
 cylinder.castShadow = true;
@@ -106,6 +106,7 @@ var Theta = 0,
 function render() {
     requestAnimationFrame(render);
 
+    // Update cartesian coordinates.
     var r_xz = 1.25 * Math.cos(Phi * Math.PI/180);
     var y = 1.25 * Math.sin(Phi * Math.PI/180),
         z = r_xz * Math.cos(Theta * Math.PI/180),
@@ -123,12 +124,10 @@ function render() {
     Phi += PhiSign * 0.5;
     if (Phi > 90.0) {
         PhiSign = -1;
-        Phi += PhiSign;
-    }
-    else if (Phi < -90.0) {
+    } else if (Phi < -90.0) {
         PhiSign = 1;
-        Phi += PhiSign;
     }
+    Phi += PhiSign;
 
     renderer.render(scene, camera);
 }
