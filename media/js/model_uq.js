@@ -29,8 +29,10 @@ function makeApp() {
         camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR),
         renderer = new THREE.WebGLRenderer({antialias:true});
 
+    var $container = $('#container'); // Get container div with jQuery.
+
     renderer.setSize(WIDTH, HEIGHT);
-    document.body.appendChild(renderer.domElement);
+    $container.append(renderer.domElement); // Add the render element to the page.
 
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
@@ -91,8 +93,8 @@ function makeApp() {
      ==============*/
 
     //Initialise ambient light
-    light = new THREE.AmbientLight(0x666666);
-    scene.add( light );
+    ambientLight = new THREE.AmbientLight(0xAAAAAA);
+    scene.add(ambientLight);
 
 
     var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 100, 120);
@@ -108,6 +110,46 @@ function makeApp() {
 
     plane.receiveShadow = true;
 
+
+
+    /*==============
+     UI/Interaction
+    ==============*/
+    function setupMouseCamera() {
+        //Setup mouse camera movement
+        var mouseDown = false;
+        var startMouseX, startMouseY;
+        var rot = Math.PI/3;
+
+        $container.on('mousedown', function (ev){
+            mouseDown = true;
+            startMouseX = ev.clientX;
+            startMouseY = ev.clientY;
+        });
+
+        $container.on('mouseup', function(){
+            mouseDown = false;
+        });
+
+        $container.on('mousemove', function(ev) {
+            if (mouseDown) {
+                var dx = ev.clientX - startMouseX;
+                var dy = ev.clientY - startMouseY;
+                rot += dx*0.005;
+                camera.position.x = Math.cos(rot)*5;
+                camera.position.z = Math.sin(rot)*5;
+                //Maximum vertical position is 50 units
+                camera.position.y = Math.max(5, camera.position.y+dy);
+                startMouseX += dx;
+                startMouseY += dy;
+                camera.lookAt(new THREE.Vector3(0, 0, 0));
+            }
+        });
+    }
+    //Setup our mouse camera controls
+    setupMouseCamera();
+
+
     /*==============
      Runtime
      ==============*/
@@ -116,7 +158,10 @@ function makeApp() {
 
     function render() {
         requestAnimationFrame(render);
-        plane.rotateZ(0.01);
+
+        //camera.position.y += Math.sin(clock.getElapsedTime());
+        //camera.lookAt(new THREE.Vector3(0, 0, 0));
+
         renderer.render(scene, camera);
     }
 
