@@ -2,173 +2,131 @@
  * Created by tkc on 7/05/15.
  */
 
-$(document).ready(makeApp);
+// Variables used as globals.
+var container, stats;
+var camera, controls, scene, renderer;
+
+var settings = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+    view_angle: 75,
+    near: 0.1,
+    far: 1000
+};
+settings.aspect = settings.width / settings.height;
 
 
-function radians(deg) {
-    return deg * (Math.PI/180);
+// Start the application.
+init();
+render();
+
+
+/**
+ * ???
+ */
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
 }
 
 
-function makeApp() {
-    /*=============
-     Initialisation
-     ==============*/
-
-    // Scene variables.
-    var WIDTH = window.innerWidth,
-        HEIGHT = window.innerHeight;
-
-    // Camera variables.
-    var VIEW_ANGLE = 75,
-        ASPECT = WIDTH / HEIGHT,
-        NEAR = 0.1,
-        FAR = 1000;
-
-    var scene = new THREE.Scene(),
-        camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR),
-        renderer = new THREE.WebGLRenderer({antialias:true});
-
-    var $container = $('#container'); // Get container div with jQuery.
-
-    renderer.setSize(WIDTH, HEIGHT);
-    $container.append(renderer.domElement); // Add the render element to the page.
-
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
-
-    // Settings.
+/**
+ * Initialising function. Called to establish the scene, geometry, and lighting.
+ */
+function init() {
+    camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
     camera.position.z = 25;
-    renderer.setClearColor(0x0091D8, 1); //'Sky color'
 
-    // Enable Shadows.
-    renderer.shadowMapEnabled = true;
-    renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    controls = new THREE.OrbitControls( camera );
+    controls.damping = 0.2;
+    controls.addEventListener( 'change', render );
 
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2( 0x0091D8, 0.002 );
 
-    /*============
-     Geometry
-     ==============*/
+    // WORLD:
 
-    // Initialise a plane.
+    // Bottom plane.
     var plane_geometry = new THREE.PlaneBufferGeometry(20, 20);
     var plane_material = new THREE.MeshLambertMaterial({color: 0x539D3E});
     var plane = new THREE.Mesh(plane_geometry, plane_material);
+    plane.rotateX(radians(-90));
     scene.add(plane);
 
+    // Buildings.
+    var b_amp = 5,
+        b_min = 1,
+        sig_x = 3,
+        sig_z = 3;
 
-    // Initialise buildings.
-    //var x, z;
-    //
-    //var b_amp = 5,
-    //    sig_x = 3,
-    //    sig_z = 3;
-    //
-    //for (x=-10; x<10; x++) {
-    //    for (z=-10; z<10; z++) {
-    //        //var depth = 5 - 0.05*Math.pow(x, 2) - 0.05*Math.pow(z, 2);
-    //        var depth = b_amp * Math.exp(- ((Math.pow(x, 2)/(2*Math.pow(sig_x, 2))) + (Math.pow(z, 2)/(2*Math.pow(sig_z, 2)))) );
-    //        depth = Math.max(0.1, depth);
-    //
-    //        var building_geometry = new THREE.BoxGeometry(0.75, 0.75, depth),
-    //            building_material = new THREE.MeshLambertMaterial({color: 0xffffff});
-    //
-    //        var building = new THREE.Mesh(building_geometry, building_material.clone());
-    //
-    //        building.position.x += x + 0.5;
-    //        building.position.y += z + 0.5;
-    //        building.position.z += 1/2 * depth;
-    //
-    //        building.material.color.setHSL(Math.random(), 1, 0.5);
-    //        building.receiveShadow = true;
-    //        building.castShadow = true;
-    //
-    //        plane.add(building);
-    //    }
-    //}
+    for (var x=-10; x<10; x++) {
+        for (var z=-10; z<10; z++) {
+            //var depth = 5 - 0.05*Math.pow(x, 2) - 0.05*Math.pow(z, 2);
+            var height = b_amp * Math.exp(- ((Math.pow(x, 2)/(2*Math.pow(sig_x, 2))) + (Math.pow(z, 2)/(2*Math.pow(sig_z, 2)))) );
+            height = Math.max(b_min, height);
+
+            var building_geometry = new THREE.BoxGeometry(0.75, height, 0.75),
+                building_material = new THREE.MeshLambertMaterial({color: 0xDAC892});
+
+            var building = new THREE.Mesh(building_geometry, building_material.clone());
+            building.material.color.setHSL((x+z)/20, 1, 0.5);
+
+            building.position.x = x + 0.5;
+            building.position.y += 1/2 * height;
+            building.position.z = z + 0.5;
+            //building.rotateX(radians(90));
+            //var euler = new THREE.Euler( radians(90), 0, 0, 'XYZ' );
+            //building.position.applyEuler(euler);
+            scene.add(building);
+        }
+    }
 
 
+    // LIGHTS:
 
-    /*=============
-     Lighting
-     ==============*/
+    var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 100, 120);
+    spotLight.position.set(20, 0, 20);
+    spotLight.target.position.set(0, 0, 0);
 
-    //Initialise ambient light
     ambientLight = new THREE.AmbientLight(0xAAAAAA);
     scene.add(ambientLight);
 
 
-    var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 100, 120);
-    spotLight.position.x = 20;
-    spotLight.position.z = 20;
-    spotLight.position.y = 0;
-    spotLight.target.position.set(0, 0, 0);
-    spotLight.shadowCameraNear = 0.01;
-    spotLight.castShadow = true;
-    spotLight.shadowDarkness = 0.25;
-    spotLight.shadowBias = 0.0001;
-    spotLight.shadowMapWidth = 2048;
-    spotLight.shadowMapHeight = 2048;
-    //spotLight.shadowCameraVisible	= true;
-    scene.add(spotLight);
+    // RENDERER:
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setClearColor( scene.fog.color );
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
-    plane.receiveShadow = true;
+    container = document.getElementById( 'container' );
+    container.appendChild( renderer.domElement );
 
+    stats = new Stats();
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    stats.domElement.style.zIndex = 100;
+    container.appendChild( stats.domElement );
 
 
-    /*==============
-     UI/Interaction
-    ==============*/
-    function setupMouseCamera() {
-        //Setup mouse camera movement
-        var mouseDown = false;
-        var startMouseX, startMouseY;
-        var rot = Math.PI/3;
+    window.addEventListener( 'resize', onWindowResize, false );
+    animate();
 
-        $container.on('mousedown', function (ev){
-            mouseDown = true;
-            startMouseX = ev.clientX;
-            startMouseY = ev.clientY;
-        });
+}
 
-        $container.on('mouseup', function(){
-            mouseDown = false;
-        });
+/**
+ * Resize the canvas when the window size is modified.
+ */
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 
-        $container.on('mousemove', function(ev) {
-            if (mouseDown) {
-                var dx = ev.clientX - startMouseX;
-                var dy = ev.clientY - startMouseY;
-                rot += dx*0.005;
-                camera.position.x = Math.cos(rot)*5;
-                camera.position.z = Math.sin(rot)*5;
-                //Maximum vertical position is 50 units
-                camera.position.y = Math.max(5, camera.position.y+dy);
-                startMouseX += dx;
-                startMouseY += dy;
-                camera.lookAt(new THREE.Vector3(0, 0, 0));
-            }
-        });
-    }
-    //Setup our mouse camera controls
-    setupMouseCamera();
-
-
-    /*==============
-     Runtime
-     ==============*/
-
-    plane.rotateX(radians(-90));
-
-    function render() {
-        requestAnimationFrame(render);
-
-        //camera.position.y += Math.sin(clock.getElapsedTime());
-        //camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-        renderer.render(scene, camera);
-    }
+    renderer.setSize( window.innerWidth, window.innerHeight );
 
     render();
 
+}
+
+function render() {
+    renderer.render(scene, camera);
+    stats.update();
 }

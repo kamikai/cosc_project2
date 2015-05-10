@@ -13,7 +13,7 @@ class LevelCollection
 
 
 class Building
-# Contiguos set of LevelCollections
+# Contiguous set of LevelCollections
   constructor: (@cells) ->
 
   getModel: ->
