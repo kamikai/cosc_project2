@@ -58,34 +58,35 @@ function makeApp() {
 
 
     // Initialise buildings.
-    var x, z;
+    //var x, z;
+    //
+    //var b_amp = 5,
+    //    sig_x = 3,
+    //    sig_z = 3;
+    //
+    //for (x=-10; x<10; x++) {
+    //    for (z=-10; z<10; z++) {
+    //        //var depth = 5 - 0.05*Math.pow(x, 2) - 0.05*Math.pow(z, 2);
+    //        var depth = b_amp * Math.exp(- ((Math.pow(x, 2)/(2*Math.pow(sig_x, 2))) + (Math.pow(z, 2)/(2*Math.pow(sig_z, 2)))) );
+    //        depth = Math.max(0.1, depth);
+    //
+    //        var building_geometry = new THREE.BoxGeometry(0.75, 0.75, depth),
+    //            building_material = new THREE.MeshLambertMaterial({color: 0xffffff});
+    //
+    //        var building = new THREE.Mesh(building_geometry, building_material.clone());
+    //
+    //        building.position.x += x + 0.5;
+    //        building.position.y += z + 0.5;
+    //        building.position.z += 1/2 * depth;
+    //
+    //        building.material.color.setHSL(Math.random(), 1, 0.5);
+    //        building.receiveShadow = true;
+    //        building.castShadow = true;
+    //
+    //        plane.add(building);
+    //    }
+    //}
 
-    var b_amp = 5,
-        sig_x = 3,
-        sig_z = 3;
-
-    for (x=-10; x<10; x++) {
-        for (z=-10; z<10; z++) {
-            //var depth = 5 - 0.05*Math.pow(x, 2) - 0.05*Math.pow(z, 2);
-            var depth = b_amp * Math.exp(- ((Math.pow(x, 2)/(2*Math.pow(sig_x, 2))) + (Math.pow(z, 2)/(2*Math.pow(sig_z, 2)))) );
-            depth = Math.max(0.1, depth);
-
-            var building_geometry = new THREE.BoxGeometry(0.75, 0.75, depth),
-                building_material = new THREE.MeshLambertMaterial({color: 0xffffff});
-
-            var building = new THREE.Mesh(building_geometry, building_material.clone());
-
-            building.position.x += x + 0.5;
-            building.position.y += z + 0.5;
-            building.position.z += 1/2 * depth;
-
-            building.material.color.setHSL(Math.random(), 1, 0.5);
-            building.receiveShadow = true;
-            building.castShadow = true;
-
-            plane.add(building);
-        }
-    }
 
 
     /*=============
@@ -104,7 +105,10 @@ function makeApp() {
     spotLight.target.position.set(0, 0, 0);
     spotLight.shadowCameraNear = 0.01;
     spotLight.castShadow = true;
-    spotLight.shadowDarkness = 0.5;
+    spotLight.shadowDarkness = 0.25;
+    spotLight.shadowBias = 0.0001;
+    spotLight.shadowMapWidth = 2048;
+    spotLight.shadowMapHeight = 2048;
     //spotLight.shadowCameraVisible	= true;
     scene.add(spotLight);
 
