@@ -54,6 +54,8 @@ function init() {
     scene.add(plane);
 
     // Buildings.
+    var buildings = new THREE.Group();
+
     var b_amp = 5,
         b_min = 1,
         sig_x = 3,
@@ -74,12 +76,11 @@ function init() {
             building.position.x = x + 0.5;
             building.position.y += 1/2 * height;
             building.position.z = z + 0.5;
-            //building.rotateX(radians(90));
-            //var euler = new THREE.Euler( radians(90), 0, 0, 'XYZ' );
-            //building.position.applyEuler(euler);
-            scene.add(building);
+            buildings.add(building);
         }
     }
+
+    scene.add(buildings);
 
 
     // LIGHTS:
