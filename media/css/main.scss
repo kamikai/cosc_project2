@@ -2,8 +2,16 @@ body {
   font-family: serif;
   margin: 0;
 
-  h1 {
-    font-variant: small-caps;
+  #info {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding: 5px;
+    z-index: 150;
+    h1 {
+      font-variant: small-caps;
+      text-shadow: 0 0 5px #DDDDDD;
+    }
   }
 
   #container {
