@@ -66,8 +66,8 @@ function init() {
         sig_x = 3,
         sig_z = 3;
 
-    var bg_geo = new THREE.BoxGeometry(0.75, 1, 0.75),
-        bg_mat = new THREE.MeshPhongMaterial({color: 0x6600AA});
+    var building_geometry = new THREE.BoxGeometry(0.75, 1, 0.75),
+        building_material = new THREE.MeshPhongMaterial({color: 0x6600AA});
 
     for (var x=-10; x<10; x++) {
         for (var z=-10; z<10; z++) {
@@ -75,9 +75,9 @@ function init() {
             var height = b_amp * Math.exp(- ((Math.pow(x, 2)/(2*Math.pow(sig_x, 2))) + (Math.pow(z, 2)/(2*Math.pow(sig_z, 2)))) );
             height = Math.max(b_min, height) + Math.random();
 
-            // Create a new building object.
-            var building = new THREE.Mesh(bg_geo, bg_mat.clone());
-            building.material.color.setHSL(Math.random(), 1, 0.5); // Set color to random.
+            // Create a new building object (clone the material so it can be independently colored.
+            var building = new THREE.Mesh(building_geometry, building_material.clone());
+            building.material.color.setHSL(Math.random(), 1, 0.5); // Set a random color.
             building.scale.y *= height;
 
             // Position the building on the grid.
@@ -93,21 +93,13 @@ function init() {
         }
     }
 
-    buildings.castShadow = true;
-    buildings.receiveShadow = true;
     scene.add(buildings);
-
 
     // LIGHTS:
 
     var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 100, 90);
     spotLight.position.set(20, 20, 20);
     spotLight.target.position.set(0, 0, 0);
-
-    spotLight.castShadow = true;
-    spotLight.shadowDarkness = 0.5;
-    spotLight.shadowCameraVisible = true;
-
     scene.add(spotLight);
 
     var ambientLight = new THREE.AmbientLight(0x666666);
@@ -118,27 +110,18 @@ function init() {
     renderer.setClearColor(scene.fog.color);
     renderer.setSize(settings.width, settings.height);
 
-    // Shadow settings.
-    renderer.shadowMapEnabled = true;
-    renderer.shadowCameraNear = 3;
-    renderer.shadowCameraFar = camera.far;
-    renderer.shadowCameraFov = 50;
-    renderer.shadowMapBias = 0.0039;
-    renderer.shadowMapDarkness = 0.5;
-    renderer.shadowMapWidth = 1024;
-    renderer.shadowMapHeight = 1024;
-
-    // Add canvas to designated object.
+    // DOM MANIPULATION:
     container = document.getElementById('container');
     container.appendChild(renderer.domElement);
 
-    // Stats monitor.
+    // STATISTICS:
     stats = new Stats();
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.top = '0px';
     stats.domElement.style.zIndex = 100;
     container.appendChild(stats.domElement);
 
+    // EVENTS:
     window.addEventListener('resize', onWindowResize, false);
 
     render();
