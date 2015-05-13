@@ -6,14 +6,14 @@
 var container, stats;
 var camera, controls, scene, renderer;
 
-var buildings;
+var buildings, spotLight;
 
 var settings = {
     width: window.innerWidth,
     height: window.innerHeight,
     view_angle: 75,
-    near: 0.1,
-    far: 1000
+    near: 1,
+    far: 10000
 };
 settings.aspect = settings.width / settings.height;
 
@@ -41,20 +41,20 @@ function animate() {
  */
 function init() {
     camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
-    camera.position.set(10, 10, 10);
+    camera.position.set(250, 250, 250);
 
     controls = new THREE.OrbitControls(camera);
     controls.damping = 0.2;
     controls.addEventListener('change', render);
 
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0091D8, 0.002);
+    scene.fog = new THREE.FogExp2(0x0091D8, 0.0002);
 
     // WORLD:
 
     // Bottom plane.
-    var plane_geometry = new THREE.PlaneBufferGeometry(20, 20);
-    var plane_material = new THREE.MeshLambertMaterial({color: 0x539D3E});
+    var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
+    var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A});
     var plane = new THREE.Mesh(plane_geometry, plane_material);
     plane.rotateX(radians(-90));
     plane.receiveShadow = true;
@@ -68,17 +68,18 @@ function init() {
     for (var i=0; i<BUILDING_DATA.length; i++) {
         console.log('Adding building: ' + BUILDING_DATA[i].name);
 
-        var extrudeSettings = { amount: BUILDING_DATA[i].levels * 0.5, bevelEnabled: false };
+        var extrudeSettings = { amount: BUILDING_DATA[i].levels * 7.5, bevelEnabled: false };
 
         var building_shape = new THREE.Shape(BUILDING_DATA[i].points);
         var building_geometry = new THREE.ExtrudeGeometry(building_shape, extrudeSettings);
         var building_mesh = new THREE.Mesh(building_geometry, building_material.clone());
 
         building_mesh.rotateX(radians(90)); // Stand upright from horizontal.
+        building_mesh.rotateZ(radians(BUILDING_DATA[i].rotation));
 
-        building_mesh.position.x = BUILDING_DATA[i].position.x;
-        building_mesh.position.z = BUILDING_DATA[i].position.y;
-        building_mesh.position.y += BUILDING_DATA[i].levels * 0.5; // Move up to ground level.
+        building_mesh.position.x = BUILDING_DATA[i].position.x - 1000; // Offset around origin.
+        building_mesh.position.z = BUILDING_DATA[i].position.y - 1000; // Offset around origin.
+        building_mesh.position.y += BUILDING_DATA[i].levels * 7.5; // Move up to ground level.
 
         building_mesh.castShadow = true;
         building_mesh.receiveShadow = true;
@@ -90,15 +91,16 @@ function init() {
 
     // LIGHTS:
 
-    var spotLight = new THREE.SpotLight(0xFFFFFF, 2);
-    spotLight.position.set(20, 20, 20);
+    spotLight = new THREE.SpotLight(0xFFFFFF, 1);
+    spotLight.position.set(500, 250, 500);
     spotLight.target.position.set(0, 0, 0);
     spotLight.castShadow = true;
-    spotLight.shadowMapWidth = 1024;
-    spotLight.shadowMapHeight = 1024;
-    spotLight.shadowCameraNear = 0.1;
-    spotLight.shadowCameraFar = 100;
-    spotLight.shadowCameraFov = 30;
+    spotLight.shadowMapWidth = 1024*2;
+    spotLight.shadowMapHeight = 1024*2;
+    spotLight.shadowCameraNear = 1;
+    spotLight.shadowCameraFar = 5000;
+    spotLight.shadowCameraFov = 90;
+    //spotLight.shadowCameraVisible = true;
     scene.add(spotLight);
 
     var ambientLight = new THREE.AmbientLight(0x666666);
@@ -131,7 +133,7 @@ function init() {
 
     var building_start = {height_scale: 0.1, color: 0.0},
         building_target = {height_scale: 1, color: 0.8};
-    var building_tween = new TWEEN.Tween(building_start).to(building_target, 2000);
+    var building_tween = new TWEEN.Tween(building_start).to(building_target, 5000);
     building_tween.easing(TWEEN.Easing.Sinusoidal.InOut);
     building_tween.onUpdate(function () {
         buildings.scale.y = building_start.height_scale;
@@ -149,10 +151,13 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth / window.innerHeight);
-    render();
+    //render();
 }
 
 function render() {
     TWEEN.update();
+    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.1);
+    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.1);
+    spotLight.lookAt(new THREE.Vector3());
     renderer.render(scene, camera);
 }
