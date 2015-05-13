@@ -41,7 +41,7 @@ function animate() {
  */
 function init() {
     camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
-    camera.position.set(0, 10, 10);
+    camera.position.set(10, 10, 10);
 
     controls = new THREE.OrbitControls(camera);
     controls.damping = 0.2;
@@ -51,11 +51,6 @@ function init() {
     scene.fog = new THREE.FogExp2(0x0091D8, 0.002);
 
     // WORLD:
-
-    // Show an axis reference.
-    //var axis_helper = new THREE.AxisHelper(3);
-    //axis_helper.position.x += 10;
-    //scene.add(axis_helper);
 
     // Bottom plane.
     var plane_geometry = new THREE.PlaneBufferGeometry(20, 20);
@@ -133,6 +128,18 @@ function init() {
 
     // EVENTS:
     window.addEventListener('resize', onWindowResize, false);
+
+    var building_start = {height_scale: 0.1, color: 0.0},
+        building_target = {height_scale: 1, color: 0.8};
+    var building_tween = new TWEEN.Tween(building_start).to(building_target, 2000);
+    building_tween.easing(TWEEN.Easing.Sinusoidal.InOut);
+    building_tween.onUpdate(function () {
+        buildings.scale.y = building_start.height_scale;
+        for (var i=0; i<buildings.children.length; i++) {
+            buildings.children[i].material.color.setHSL(0.1, building_start.color, 0.6);
+        }
+    });
+    building_tween.start();
 }
 
 /**
@@ -142,16 +149,10 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth / window.innerHeight);
-    //render();
+    render();
 }
 
 function render() {
-
-    for (var i=0; i<buildings.children.length; i++) {
-        buildings.children[i].rotateZ(0.01);
-    }
-
-    buildings.rotateY(-0.01);
-
+    TWEEN.update();
     renderer.render(scene, camera);
 }
