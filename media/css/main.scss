@@ -4,12 +4,15 @@ body {
 
   #info {
     position: absolute;
-    top: 0;
     width: 100%;
-    padding: 5px;
+    top: 0;
     z-index: 150;
+    padding: 5px;
+    text-align: center;
+
     h1 {
       font-variant: small-caps;
+      font-weight: 500;
       text-shadow: 0 0 5px #DDDDDD;
     }
   }
@@ -25,3 +28,4 @@ body {
     height: 100%;
   }
 }
+

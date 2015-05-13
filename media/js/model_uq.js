@@ -59,38 +59,18 @@ function init() {
     scene.add(plane);
 
     // Buildings.
-    buildings = new THREE.Group();
+    var buildings = new THREE.Group(),
+        building_material = new THREE.MeshPhongMaterial({color: 0xB59524});
 
-    var b_amp = 5,
-        b_min = 0.1,
-        sig_x = 3,
-        sig_z = 3;
 
-    var building_geometry = new THREE.BoxGeometry(0.75, 1, 0.75),
-        building_material = new THREE.MeshPhongMaterial({color: 0x6600AA});
+    for (var i=0; i<BUILDING_DATA.length; i++) {
+        console.log('Added Building: ' + BUILDING_DATA[i].name);
 
-    for (var x=-10; x<10; x++) {
-        for (var z=-10; z<10; z++) {
-            // Calculate a new random height based on a normal distribution.
-            var height = b_amp * Math.exp(- ((Math.pow(x, 2)/(2*Math.pow(sig_x, 2))) + (Math.pow(z, 2)/(2*Math.pow(sig_z, 2)))) );
-            height = Math.max(b_min, height) + Math.random();
-
-            // Create a new building object (clone the material so it can be independently colored.
-            var building = new THREE.Mesh(building_geometry, building_material.clone());
-            building.material.color.setHSL(Math.random(), 1, 0.5); // Set a random color.
-            building.scale.y *= height;
-
-            // Position the building on the grid.
-            building.position.x = x + 0.5;
-            building.position.y += 1/2 * height; // Offset to ground.
-            building.position.z = z + 0.5;
-
-            building.castShadow = true;
-            building.receiveShadow = true;
-
-            // Add the building to the buildings group.
-            buildings.add(building);
-        }
+        var building_shape = new THREE.Shape(BUILDING_DATA[i].points);
+        console.log(BUILDING_DATA[i].name + ' position: ' + building_shape.positionArray);
+        var building_geometry = new THREE.ExtrudeGeometry(building_shape, {amount: 1});
+        var building = new THREE.Mesh(building_geometry, building_material.clone());
+        buildings.add(building);
     }
 
     scene.add(buildings);
