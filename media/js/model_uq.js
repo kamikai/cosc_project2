@@ -56,15 +56,15 @@ function init() {
     var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
     var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A});
     var plane = new THREE.Mesh(plane_geometry, plane_material);
-    plane.rotateX(radians(-90));
+    plane.rotateX(radians(-90)); // Rotate to flat.
     plane.receiveShadow = true;
-    scene.add(plane);
+    scene.add(plane); // Add it to the global scene.
 
     // Buildings.
-    buildings = new THREE.Group();
+    buildings = new THREE.Group(); // Make a group that contains all buildings.
     var building_material = new THREE.MeshPhongMaterial({color: 0xB59524});
 
-
+    // Iterate building data (defined in data.js).
     for (var i=0; i<BUILDING_DATA.length; i++) {
         console.log('Adding building: ' + BUILDING_DATA[i].name);
 
@@ -84,7 +84,7 @@ function init() {
         building_mesh.castShadow = true;
         building_mesh.receiveShadow = true;
 
-        buildings.add(building_mesh); // Add to the buildings group.
+        buildings.add(building_mesh); // Add this building to the buildings group.
     }
     scene.add(buildings);
 
@@ -156,8 +156,9 @@ function onWindowResize() {
 
 function render() {
     TWEEN.update();
-    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.1);
-    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.1);
+    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.5);
+    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.5);
+    spotLight.position.y = 200 + 50*Math.sin(clock.getElapsedTime());
     spotLight.lookAt(new THREE.Vector3());
     renderer.render(scene, camera);
 }
