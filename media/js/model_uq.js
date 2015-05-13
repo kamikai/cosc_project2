@@ -22,7 +22,7 @@ var clock = new THREE.Clock();
 
 // Start the application.
 init();
-render();
+animate();
 
 
 /**
@@ -30,7 +30,9 @@ render();
  */
 function animate() {
     requestAnimationFrame(animate);
+    render();
     controls.update();
+    stats.update();
 }
 
 
@@ -39,7 +41,7 @@ function animate() {
  */
 function init() {
     camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
-    camera.position.set(8, 2, -8);
+    camera.position.set(10, 0, -15);
 
     controls = new THREE.OrbitControls(camera);
     controls.damping = 0.2;
@@ -55,24 +57,32 @@ function init() {
     var plane_material = new THREE.MeshLambertMaterial({color: 0x539D3E});
     var plane = new THREE.Mesh(plane_geometry, plane_material);
     plane.rotateX(radians(-90));
-    plane.receiveShadow = true;
     scene.add(plane);
 
     // Buildings.
-    var buildings = new THREE.Group(),
-        building_material = new THREE.MeshPhongMaterial({color: 0xB59524});
+    buildings = new THREE.Group();
+    var building_material = new THREE.MeshPhongMaterial({color: 0xB59524});
 
 
     for (var i=0; i<BUILDING_DATA.length; i++) {
-        console.log('Added Building: ' + BUILDING_DATA[i].name);
+        console.log('Adding building: ' + BUILDING_DATA[i].name);
+
+        var extrudeSettings = { amount: BUILDING_DATA[i].levels, bevelEnabled: false };
 
         var building_shape = new THREE.Shape(BUILDING_DATA[i].points);
-        console.log(BUILDING_DATA[i].name + ' position: ' + building_shape.positionArray);
-        var building_geometry = new THREE.ExtrudeGeometry(building_shape, {amount: 1});
-        var building = new THREE.Mesh(building_geometry, building_material.clone());
-        buildings.add(building);
+        var building_geometry = new THREE.ExtrudeGeometry(building_shape, extrudeSettings);
+        var building_mesh = new THREE.Mesh(building_geometry, building_material.clone());
+
+        building_mesh.rotateX(radians(-90));
+
+        building_mesh.position.x = BUILDING_DATA[i].position.x;
+        building_mesh.position.z = BUILDING_DATA[i].position.y;
+
+        buildings.add(building_mesh);
     }
 
+    //buildings.rotateX(radians(-90)); // Position upright.
+    //buildings.rotateZ(radians(180)); // Position North.
     scene.add(buildings);
 
     // LIGHTS:
@@ -103,9 +113,6 @@ function init() {
 
     // EVENTS:
     window.addEventListener('resize', onWindowResize, false);
-
-    render();
-    animate();
 }
 
 /**
@@ -115,10 +122,13 @@ function onWindowResize() {
     camera.aspect = settings.aspect;
     camera.updateProjectionMatrix();
     renderer.setSize(settings.width, settings.height);
-    render();
+    //render();
 }
 
 function render() {
+
+    buildings.rotateY(0.01);
+    buildings.scale.y = Math.max(0.1, 0.5+0.5*Math.sin(clock.getElapsedTime()));
+
     renderer.render(scene, camera);
-    stats.update();
 }

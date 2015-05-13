@@ -13,16 +13,16 @@ BUILDING_DATA = [
             new THREE.Vector2(-3, -1),
         ],
     },
-    //{
-    //    name: "Parnel Building",
-    //    number: 7,
-    //    levels: 2,
-    //    position: new THREE.Vector2(0, -10),
-    //    points: [
-    //        new THREE.Vector2(-1, -10),
-    //        new THREE.Vector2(1, -10),
-    //        new THREE.Vector2(1, -12),
-    //        new THREE.Vector2(-1, -1),
-    //    ]
-    //}
+    {
+        name: "Parnel Building",
+        number: 7,
+        levels: 2,
+        position: new THREE.Vector2(-3, 7),
+        points: [
+            new THREE.Vector2(1, -12),
+            new THREE.Vector2(1, -10),
+            new THREE.Vector2(-1, -10),
+            new THREE.Vector2(-1, -12),
+        ]
+    }
 ];
