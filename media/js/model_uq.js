@@ -26,7 +26,7 @@ animate();
 
 
 /**
- * ???
+ * Keep the frame rate consistent, update UI features and trigger a render call.
  */
 function animate() {
     requestAnimationFrame(animate);
@@ -41,7 +41,7 @@ function animate() {
  */
 function init() {
     camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
-    camera.position.set(10, 0, -15);
+    camera.position.set(0, 10, 10);
 
     controls = new THREE.OrbitControls(camera);
     controls.damping = 0.2;
@@ -52,11 +52,17 @@ function init() {
 
     // WORLD:
 
+    // Show an axis reference.
+    //var axis_helper = new THREE.AxisHelper(3);
+    //axis_helper.position.x += 10;
+    //scene.add(axis_helper);
+
     // Bottom plane.
     var plane_geometry = new THREE.PlaneBufferGeometry(20, 20);
     var plane_material = new THREE.MeshLambertMaterial({color: 0x539D3E});
     var plane = new THREE.Mesh(plane_geometry, plane_material);
     plane.rotateX(radians(-90));
+    plane.receiveShadow = true;
     scene.add(plane);
 
     // Buildings.
@@ -67,29 +73,37 @@ function init() {
     for (var i=0; i<BUILDING_DATA.length; i++) {
         console.log('Adding building: ' + BUILDING_DATA[i].name);
 
-        var extrudeSettings = { amount: BUILDING_DATA[i].levels, bevelEnabled: false };
+        var extrudeSettings = { amount: BUILDING_DATA[i].levels * 0.5, bevelEnabled: false };
 
         var building_shape = new THREE.Shape(BUILDING_DATA[i].points);
         var building_geometry = new THREE.ExtrudeGeometry(building_shape, extrudeSettings);
         var building_mesh = new THREE.Mesh(building_geometry, building_material.clone());
 
-        building_mesh.rotateX(radians(-90));
+        building_mesh.rotateX(radians(90)); // Stand upright from horizontal.
 
         building_mesh.position.x = BUILDING_DATA[i].position.x;
         building_mesh.position.z = BUILDING_DATA[i].position.y;
+        building_mesh.position.y += BUILDING_DATA[i].levels * 0.5; // Move up to ground level.
 
-        buildings.add(building_mesh);
+        building_mesh.castShadow = true;
+        building_mesh.receiveShadow = true;
+
+        buildings.add(building_mesh); // Add to the buildings group.
     }
-
-    //buildings.rotateX(radians(-90)); // Position upright.
-    //buildings.rotateZ(radians(180)); // Position North.
     scene.add(buildings);
+
 
     // LIGHTS:
 
-    var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 100, 90);
+    var spotLight = new THREE.SpotLight(0xFFFFFF, 2);
     spotLight.position.set(20, 20, 20);
     spotLight.target.position.set(0, 0, 0);
+    spotLight.castShadow = true;
+    spotLight.shadowMapWidth = 1024;
+    spotLight.shadowMapHeight = 1024;
+    spotLight.shadowCameraNear = 0.1;
+    spotLight.shadowCameraFar = 100;
+    spotLight.shadowCameraFov = 30;
     scene.add(spotLight);
 
     var ambientLight = new THREE.AmbientLight(0x666666);
@@ -99,6 +113,12 @@ function init() {
     renderer = new THREE.WebGLRenderer({antialias: true});
     renderer.setClearColor(scene.fog.color);
     renderer.setSize(settings.width, settings.height);
+
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapSoft = true;
+
+    renderer.shadowMapWidth = 1024;
+    renderer.shadowMapHeight = 1024;
 
     // DOM MANIPULATION:
     container = document.getElementById('container');
@@ -119,16 +139,19 @@ function init() {
  * Resize the canvas when the window size is modified.
  */
 function onWindowResize() {
-    camera.aspect = settings.aspect;
+    camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(settings.width, settings.height);
+    renderer.setSize(window.innerWidth / window.innerHeight);
     //render();
 }
 
 function render() {
 
-    buildings.rotateY(0.01);
-    buildings.scale.y = Math.max(0.1, 0.5+0.5*Math.sin(clock.getElapsedTime()));
+    for (var i=0; i<buildings.children.length; i++) {
+        buildings.children[i].rotateZ(0.01);
+    }
+
+    buildings.rotateY(-0.01);
 
     renderer.render(scene, camera);
 }
