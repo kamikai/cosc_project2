@@ -66,31 +66,43 @@ function init() {
 
     // Iterate building data (defined in data.js).
     for (var i=0; i<BUILDING_DATA.length; i++) {
-        console.log('Adding building: ' + BUILDING_DATA[i].name);
+        console.log('Adding: ' + BUILDING_DATA[i].name);
 
-        var extrudeSettings = { amount: BUILDING_DATA[i].levels * 7.5, bevelEnabled: false };
+        var extrudeSettings = { amount: 7.5, bevelEnabled: false };
 
-        var building_shape = new THREE.Shape(BUILDING_DATA[i].points);
-        var building_geometry = new THREE.ExtrudeGeometry(building_shape, extrudeSettings);
-        var building_mesh = new THREE.Mesh(building_geometry, building_material.clone());
+        var level_shape = new THREE.Shape(BUILDING_DATA[i].points);
+        var level_geometry = new THREE.ExtrudeGeometry(level_shape, extrudeSettings);
 
-        building_mesh.rotateX(radians(90)); // Stand upright from horizontal.
-        building_mesh.rotateZ(radians(BUILDING_DATA[i].rotation));
+        var building = new THREE.Group();
 
-        building_mesh.position.x = BUILDING_DATA[i].position.x - 1000; // Offset around origin.
-        building_mesh.position.z = BUILDING_DATA[i].position.y - 1000; // Offset around origin.
-        building_mesh.position.y += BUILDING_DATA[i].levels * 7.5; // Move up to ground level.
+        for (var j=0; j < BUILDING_DATA[i].levels; j++) {
+            var level = new THREE.Mesh(level_geometry, building_material.clone());
+            level.material.color.setHSL(0.1 + 0.05 * (j/BUILDING_DATA[i].levels), 1, 0.5);
+            level.position.z = -7.5 * j; // Move each level to correct height
+            level.castShadow = true;
+            level.receiveShadow = true;
+            building.add(level)
+        }
 
-        building_mesh.castShadow = true;
-        building_mesh.receiveShadow = true;
+        building.rotateX(radians(90)); // Stand upright from horizontal.
+        building.rotateZ(radians(BUILDING_DATA[i].rotation));
 
-        buildings.add(building_mesh); // Add this building to the buildings group.
+        building.position.x = BUILDING_DATA[i].position.x - 1000; // Offset around origin.
+        building.position.z = BUILDING_DATA[i].position.y - 1000; // Offset around origin.
+        building.position.y += 7.5; // Move up to ground level.
+
+        building.castShadow = true;
+        building.receiveShadow = true;
+
+        buildings.add(building); // Add this building to the buildings group.
     }
     scene.add(buildings);
 
+    // Create a yellow ball as the 'Sun'
     sun = new THREE.Mesh(new THREE.SphereGeometry(10, 10, 10),
                          new THREE.MeshPhongMaterial({color: 0xFFFF66}));
     scene.add(sun);
+
 
     // LIGHTS:
 
@@ -142,7 +154,9 @@ function init() {
     building_tween.onUpdate(function () {
         buildings.scale.y = building_start.height_scale;
         for (var i=0; i<buildings.children.length; i++) {
-            buildings.children[i].material.color.setHSL(0.1, building_start.color, 0.6);
+            for (var j=0; j<buildings.children.length; j++) {
+                //buildings.children[i].children[j].material.color.setHSL(0.1, building_start.color, 0.6);
+            }
         }
     });
     building_tween.start();
