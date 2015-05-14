@@ -6,7 +6,7 @@
 var container, stats;
 var camera, controls, scene, renderer;
 
-var buildings, spotLight;
+var buildings, spotLight, sun;
 
 var settings = {
     width: window.innerWidth,
@@ -88,6 +88,9 @@ function init() {
     }
     scene.add(buildings);
 
+    sun = new THREE.Mesh(new THREE.SphereGeometry(10, 10, 10),
+                         new THREE.MeshPhongMaterial({color: 0xFFFF66}));
+    scene.add(sun);
 
     // LIGHTS:
 
@@ -100,10 +103,11 @@ function init() {
     spotLight.shadowCameraNear = 1;
     spotLight.shadowCameraFar = 5000;
     spotLight.shadowCameraFov = 90;
+    spotLight.shadowDarkness = 0.1;
     //spotLight.shadowCameraVisible = true;
     scene.add(spotLight);
 
-    var ambientLight = new THREE.AmbientLight(0x666666);
+    var ambientLight = new THREE.AmbientLight(0xDDDDDD);
     scene.add(ambientLight);
 
     // RENDERER:
@@ -149,16 +153,17 @@ function init() {
  */
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    //camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth / window.innerHeight);
-    //render();
+    render();
 }
 
 function render() {
     TWEEN.update();
-    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.5);
-    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.5);
+    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.1);
+    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.1);
     spotLight.position.y = 200 + 50*Math.sin(clock.getElapsedTime());
-    spotLight.lookAt(new THREE.Vector3());
+    spotLight.lookAt(new THREE.Vector3(0, 0, 0));
+    sun.position.set(spotLight.position.x, spotLight.position.y, spotLight.position.z);
     renderer.render(scene, camera);
 }
