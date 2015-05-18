@@ -62,7 +62,7 @@ function init() {
 
     // Buildings.
     buildings = new THREE.Group(); // Make a group that contains all buildings.
-    var building_material = new THREE.MeshPhongMaterial({color: 0xB59524, shininess: 100, specular: 0xFFFFFF, emissive: 0x222200});
+    var building_material = new THREE.MeshPhongMaterial({color: 0xB59524, shininess: 50, specular: 0xB59524});
 
     // Iterate building data (defined in data.js).
     for (var i=0; i<BUILDING_DATA.length; i++) {
@@ -101,7 +101,7 @@ function init() {
 
     // Create a yellow ball as the 'Sun'
     sun = new THREE.Mesh(new THREE.SphereGeometry(10, 10, 10),
-                         new THREE.MeshPhongMaterial({color: 0xFFFF66}));
+                         new THREE.MeshPhongMaterial({color: 0xFFFF66, emissive: 0xFFFF88}));
     scene.add(sun);
 
 
@@ -119,7 +119,7 @@ function init() {
     spotLight.shadowDarkness = 0.1;
     scene.add(spotLight);
 
-    var ambientLight = new THREE.AmbientLight(0xDDDDDD);
+    var ambientLight = new THREE.AmbientLight(0x888888);
     scene.add(ambientLight);
 
     // RENDERER:
@@ -176,7 +176,7 @@ function render() {
     TWEEN.update();
     spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.1);
     spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.1);
-    spotLight.position.y = 400 + 50*Math.sin(clock.getElapsedTime());
+    spotLight.position.y = 350 + 250*Math.sin(clock.getElapsedTime()*0.1);
     spotLight.lookAt(new THREE.Vector3(0, 0, 0));
     sun.position.set(spotLight.position.x, spotLight.position.y, spotLight.position.z);
     renderer.render(scene, camera);
