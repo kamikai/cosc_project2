@@ -273,5 +273,69 @@ BUILDING_DATA = [
             new THREE.Vector2(43, 11),
         ]
     },
+    {
+        name: "Schonell Theatre",
+        number: 22,
+        levels: 2,
+        position: new THREE.Vector2(1284, 1080),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(25, 0),
+            new THREE.Vector2(17, 25),
+            new THREE.Vector2(6, 23),
+            new THREE.Vector2(0, 39),
+            new THREE.Vector2(49, 55),
+            new THREE.Vector2(61, 14),
+        ]
+    },
+    {
+        name: "Able Smith",
+        number: 23,
+        levels: 2,
+        position: new THREE.Vector2(1220, 1020),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(11, 0),
+            new THREE.Vector2(0, 19),
+            new THREE.Vector2(0, 33),
+            new THREE.Vector2(18, 40),
+            new THREE.Vector2(28, 31),
+            new THREE.Vector2(29, 8)
+        ]
+    },
+    {
+        name: "Social Sciences Building",
+        number: 24,
+        levels: 3,
+        position: new THREE.Vector2(1191, 911),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 5),
+            new THREE.Vector2(32, 102),
+            new THREE.Vector2(47, 97),
+            new THREE.Vector2(16, 0),
+        ]
+    },
+    {
+        name: "McElwain Building",
+        number: 24,
+        levels: 2,
+        position: new THREE.Vector2(1208, 892),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(14, 0),
+            new THREE.Vector2(6, 16),
+            new THREE.Vector2(0, 18),
+            new THREE.Vector2(2, 25),
+            new THREE.Vector2(22, 25), // Inner point.
+            new THREE.Vector2(16, 38), // Spike tip.
+            new THREE.Vector2(28, 46), // Inner point.
+            new THREE.Vector2(12, 57),
+            new THREE.Vector2(13, 63),
+            new THREE.Vector2(20, 62),
+            new THREE.Vector2(34, 68), // Lowest corner.
+            new THREE.Vector2(61, 24),
+        ]
+    },
 
 ];

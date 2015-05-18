@@ -174,9 +174,9 @@ function onWindowResize() {
 
 function render() {
     TWEEN.update();
-    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.1);
-    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.1);
-    spotLight.position.y = 350 + 250*Math.sin(clock.getElapsedTime()*0.1);
+    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.05);
+    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.05);
+    spotLight.position.y = 350 + 250*Math.sin(clock.getElapsedTime()*0.05);
     spotLight.lookAt(new THREE.Vector3(0, 0, 0));
     sun.position.set(spotLight.position.x, spotLight.position.y, spotLight.position.z);
     renderer.render(scene, camera);
