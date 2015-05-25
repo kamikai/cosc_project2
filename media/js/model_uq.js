@@ -61,8 +61,23 @@ function init() {
     scene.add(plane); // Add it to the global scene.
 
     // Buildings.
+        // Load textures.
+        var spec_map = THREE.ImageUtils.loadTexture('media/images/sandstone_spec.jpg'),
+            bump_map = THREE.ImageUtils.loadTexture('media/images/sandstone_bump.jpg');
+
+        spec_map.wrapS = THREE.RepeatWrapping;
+        spec_map.wrapT = THREE.RepeatWrapping;
+        bump_map.wrapS = THREE.RepeatWrapping;
+        bump_map.wrapT = THREE.RepeatWrapping;
+
     buildings = new THREE.Group(); // Make a group that contains all buildings.
-    var building_material = new THREE.MeshPhongMaterial({color: 0xB59524, shininess: 50, specular: 0xB59524});
+    var building_material = new THREE.MeshPhongMaterial({
+        color: 0xB59524,
+        shininess: 50,
+        specular: spec_map,
+        bumpMap: bump_map,
+        bumpScale: 0.5
+    });
 
     // Iterate building data (defined in data.js).
     for (var i=0; i<BUILDING_DATA.length; i++) {
