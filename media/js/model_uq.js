@@ -151,12 +151,12 @@ function load_skybox() {
     // Load skybox textures.
     var sky_url = 'media/images/skybox/bluecloud_';
     var urls = [
-        sky_url + 'xpos.jpg',
-        sky_url + 'xneg.jpg',
+        sky_url + 'zneg.jpg',
+        sky_url + 'zpos.jpg',
         sky_url + 'ypos.jpg',
         sky_url + 'yneg.jpg',
-        sky_url + 'zpos.jpg',
-        sky_url + 'zneg.jpg'
+        sky_url + 'xpos.jpg',
+        sky_url + 'xneg.jpg'
     ];
     var texture_cube = THREE.ImageUtils.loadTextureCube(urls);
     texture_cube.format = THREE.RGBFormat;
@@ -198,8 +198,8 @@ function init() {
     //controls.addEventListener('change', render); // Triger a render when the controls update.
     controls.userPan = false;
     controls.userPanSpeed = 0.0;
-    controls.maxDistance = 5000.0;
-    //controls.maxPolarAngle = Math.PI * 0.495;
+    controls.maxDistance = 2000.0;
+    controls.maxPolarAngle = Math.PI * 0.495;
 
     // Create a top level scene object, to add geometry too.
     scene = new THREE.Scene();

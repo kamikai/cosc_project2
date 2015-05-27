@@ -337,5 +337,4 @@ BUILDING_DATA = [
             new THREE.Vector2(61, 24),
         ]
     },
-
 ];
