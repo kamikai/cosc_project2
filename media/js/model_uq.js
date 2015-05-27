@@ -2,10 +2,9 @@
  * Created by tkc on 7/05/15.
  */
 
-// Variables used as globals.
+// Declare variables used as globals.
 var container, stats;
 var camera, controls, scene, renderer;
-
 var buildings, spotLight, sun;
 
 var settings = {
@@ -15,18 +14,19 @@ var settings = {
     near: 1,
     far: 10000
 };
+
 settings.aspect = settings.width / settings.height;
 
+var clock = new THREE.Clock();  // Create a clock for managing events.
 
-var clock = new THREE.Clock();
-
-// Start the application.
+// Initialise and start the application.
 init();
 animate();
 
 
 /**
- * Keep the frame rate consistent, update UI features and trigger a render call.
+ * Function called once per frame.
+ * Keeps the frame rate consistent, updates the UI and triggers a render call.
  */
 function animate() {
     requestAnimationFrame(animate);
@@ -37,53 +37,34 @@ function animate() {
 
 
 /**
- * Initialising function. Called to establish the scene, geometry, and lighting.
+ * Function to construct the building geometries used.
+ * @return A THREE.Group of the building models.
  */
-function init() {
-    camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
-    camera.position.set(250, 250, 250);
+function load_buildings () {
+    // Load textures.
+    var spec_map = THREE.ImageUtils.loadTexture('media/images/sandstone_spec.jpg'),
+        bump_map = THREE.ImageUtils.loadTexture('media/images/sandstone_bump.jpg');
 
-    controls = new THREE.OrbitControls(camera);
-    controls.damping = 0.2;
-    controls.addEventListener('change', render);
-
-    scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0091D8, 0.0002);
-
-    // WORLD:
-
-    // Bottom plane.
-    var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
-    var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A, shininess: 5, specular: 0x004400});
-    var plane = new THREE.Mesh(plane_geometry, plane_material);
-    plane.rotateX(radians(-90)); // Rotate to flat.
-    plane.receiveShadow = true;
-    scene.add(plane); // Add it to the global scene.
-
-    // Buildings.
-        // Load textures.
-        var spec_map = THREE.ImageUtils.loadTexture('media/images/sandstone_spec.jpg'),
-            bump_map = THREE.ImageUtils.loadTexture('media/images/sandstone_bump.jpg');
-
-        spec_map.wrapS = THREE.RepeatWrapping;
-        spec_map.wrapT = THREE.RepeatWrapping;
-        bump_map.wrapS = THREE.RepeatWrapping;
-        bump_map.wrapT = THREE.RepeatWrapping;
+    spec_map.wrapS = THREE.RepeatWrapping;
+    spec_map.wrapT = THREE.RepeatWrapping;
+    bump_map.wrapS = THREE.RepeatWrapping;
+    bump_map.wrapT = THREE.RepeatWrapping;
 
     buildings = new THREE.Group(); // Make a group that contains all buildings.
     var building_material = new THREE.MeshPhongMaterial({
         color: 0xB59524,
         shininess: 50,
-        specular: spec_map,
+        specular: 0xFFEE77,
+        map: spec_map,
         bumpMap: bump_map,
         bumpScale: 0.5
     });
 
     // Iterate building data (defined in data.js).
-    for (var i=0; i<BUILDING_DATA.length; i++) {
+    for (var i = 0; i < BUILDING_DATA.length; i++) {
         console.log('Adding: ' + BUILDING_DATA[i].name);
 
-        var extrudeSettings = { amount: 7.5, bevelEnabled: false };
+        var extrudeSettings = {amount: 7.5, bevelEnabled: false};
 
         var level_shape = new THREE.Shape(BUILDING_DATA[i].points);
         var level_geometry = new THREE.ExtrudeGeometry(level_shape, extrudeSettings);
@@ -91,9 +72,9 @@ function init() {
         var building = new THREE.Group();
 
         // Iterate the levels of the buildings, adding them and moving them increasingly upwards.
-        for (var j=0; j < BUILDING_DATA[i].levels; j++) {
+        for (var j = 0; j < BUILDING_DATA[i].levels; j++) {
             var level = new THREE.Mesh(level_geometry, building_material.clone());
-            level.material.color.setHSL(0.1 + 0.05 * (j/BUILDING_DATA[i].levels), 1, 0.5);
+            level.material.color.setHSL(0.1 + 0.05 * (j / BUILDING_DATA[i].levels), 1, 0.5);
             level.position.z = -7.5 * j; // Move each level to correct height.
             level.castShadow = true;
             level.receiveShadow = true;
@@ -112,6 +93,55 @@ function init() {
 
         buildings.add(building); // Add this building to the buildings group.
     }
+
+    return buildings
+}
+
+/**
+ * Function to crete, (texture?) and position the world plain.
+ * @return a mesh representing
+ */
+function load_plane() {
+
+}
+
+/**
+ * Function to create the sun geometry, and contains a light.
+ * @return
+ */
+function load_sun() {
+
+}
+
+
+/**
+ * Initialising function. Called to establish the scene, geometry, and lighting.
+ */
+function init() {
+    // Create a camera object into the global namespace.
+    camera = new THREE.PerspectiveCamera(settings.view_angle, settings.aspect, settings.near, settings.far);
+    camera.position.set(250, 250, 250);
+
+    // Load mouse event handlers to manage panning, zooming, and rotating.
+    controls = new THREE.OrbitControls(camera);
+    controls.damping = 0.2;
+    controls.addEventListener('change', render); // Triger a render when the controls update.
+
+    // Create a top level scene object, to add geometry too.
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0091D8, 0.0002);
+
+    // WORLD:
+
+    // Bottom plane.
+    var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
+    var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A, shininess: 5, specular: 0x004400});
+    var plane = new THREE.Mesh(plane_geometry, plane_material);
+    plane.rotateX(radians(-90)); // Rotate to flat.
+    plane.receiveShadow = true;
+    scene.add(plane); // Add it to the global scene.
+
+    buildings = load_buildings();
     scene.add(buildings);
 
     // Create a yellow ball as the 'Sun'
@@ -119,9 +149,7 @@ function init() {
                          new THREE.MeshPhongMaterial({color: 0xFFFF66, emissive: 0xFFFF88}));
     scene.add(sun);
 
-
     // LIGHTS:
-
     spotLight = new THREE.SpotLight(0xFFFFFF, 1);
     spotLight.position.set(500, 250, 500);
     spotLight.target.position.set(0, 0, 0);
@@ -177,21 +205,23 @@ function init() {
     building_tween.start();
 }
 
+
+
 /**
  * Resize the canvas when the window size is modified.
+ * (Currently broken -> get white screen?).
  */
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
-    //camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth / window.innerHeight);
     render();
 }
 
 function render() {
     TWEEN.update();
-    spotLight.position.x = 500*Math.cos(clock.getElapsedTime() * 0.05);
-    spotLight.position.z = 500*Math.sin(clock.getElapsedTime() * 0.05);
-    spotLight.position.y = 350 + 250*Math.sin(clock.getElapsedTime()*0.05);
+    spotLight.position.x = 500 * Math.cos(clock.getElapsedTime() * 0.05);
+    spotLight.position.z = 500 * Math.sin(clock.getElapsedTime() * 0.05);
+    spotLight.position.y = 350 + 250*Math.sin(clock.getElapsedTime() * 0.05);
     spotLight.lookAt(new THREE.Vector3(0, 0, 0));
     sun.position.set(spotLight.position.x, spotLight.position.y, spotLight.position.z);
     renderer.render(scene, camera);
