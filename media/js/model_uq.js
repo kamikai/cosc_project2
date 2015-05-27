@@ -53,11 +53,11 @@ function load_buildings () {
     buildings = new THREE.Group(); // Make a group that contains all buildings.
     var building_material = new THREE.MeshPhongMaterial({
         color: 0xFFAA76,
-        shininess: 50,
-        //specular: 0xFFEE77,
+        shininess: 0,
+        specular: 0xFF8844,
         map: spec_map,
         bumpMap: bump_map,
-        bumpScale: 0.05
+        bumpScale: 0.5
     });
 
     // Iterate building data (defined in data.js).
@@ -74,7 +74,8 @@ function load_buildings () {
         // Iterate the levels of the buildings, adding them and moving them increasingly upwards.
         for (var j = 0; j < BUILDING_DATA[i].levels; j++) {
             var level = new THREE.Mesh(level_geometry, building_material.clone());
-            level.material.color.setHSL(0.1 + 0.05 * (j / BUILDING_DATA[i].levels), 1, 0.5);
+            //level.material.color.setHSL(0.1 + 0.05 * (j / BUILDING_DATA[i].levels), 1, 0.6);
+            level.material.color.setHSL(0.1+(j / 100), 1, 0.5);
             level.position.z = -7.5 * j; // Move each level to correct height.
             level.castShadow = true;
             level.receiveShadow = true;
@@ -144,6 +145,46 @@ function load_sun() {
 
 
 /**
+ * Function to initialise a skybox, for a better looking sky.
+ */
+function load_skybox() {
+    // Load skybox textures.
+    var sky_url = 'media/images/skybox/bluecloud_';
+    var urls = [
+        sky_url + 'xpos.jpg',
+        sky_url + 'xneg.jpg',
+        sky_url + 'ypos.jpg',
+        sky_url + 'yneg.jpg',
+        sky_url + 'zpos.jpg',
+        sky_url + 'zneg.jpg'
+    ];
+    var texture_cube = THREE.ImageUtils.loadTextureCube(urls);
+    texture_cube.format = THREE.RGBFormat;
+
+    // Initialise skybox cube shader.
+    var shader = THREE.ShaderLib['cube'];
+    shader.uniforms['tCube'].value = texture_cube; // Assign textures.
+
+    // Create sky material.
+    var sky_material = new THREE.ShaderMaterial({
+        fragmentShader: shader.fragmentShader,
+        vertexShader: shader.vertexShader,
+        uniforms: shader.uniforms,
+        depthWrite: false,
+        side: THREE.BackSide
+    });
+
+    // Create sky mesh:
+    var skybox = new THREE.Mesh(
+        new THREE.CubeGeometry(1e4, 1e4, 1e4),
+        sky_material
+    );
+
+    return skybox;
+}
+
+
+/**
  * Initialising function. Called to establish the scene, geometry, and lighting.
  */
 function init() {
@@ -157,8 +198,8 @@ function init() {
     //controls.addEventListener('change', render); // Triger a render when the controls update.
     controls.userPan = false;
     controls.userPanSpeed = 0.0;
-    controls.maxDistance = 1000.0;
-    controls.maxPolarAngle = Math.PI * 0.495;
+    controls.maxDistance = 5000.0;
+    //controls.maxPolarAngle = Math.PI * 0.495;
 
     // Create a top level scene object, to add geometry too.
     scene = new THREE.Scene();
@@ -169,20 +210,19 @@ function init() {
     var plane = load_plane();
     buildings = load_buildings(); // Load all building into global variable.
     sun = load_sun();
+    skybox = load_skybox();
+
 
     // Add all loaded geometry to the scene.
     scene.add(plane);
     scene.add(buildings);
     scene.add(sun);
+    scene.add(skybox);
 
     // LIGHTS:
-
-    //scene.add(spotLight);
-
-    var ambientLight = new THREE.AmbientLight(0x666666);
+    var ambientLight = new THREE.AmbientLight(0x666666),
+        hemiLight = new THREE.HemisphereLight( 0x9AC2FF, 0x00AA00, 0.6 );
     scene.add(ambientLight);
-
-    var hemiLight = new THREE.HemisphereLight( 0x9AC2FF, 0x00AA00, 0.6 );
     scene.add(hemiLight);
 
     // RENDERER:
