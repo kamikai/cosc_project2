@@ -5,7 +5,7 @@
 // Declare variables used as globals.
 var container, stats;
 var camera, controls, scene, renderer;
-var buildings, spotLight, sun;
+var buildings, sun;
 
 var settings = {
     width: window.innerWidth,
@@ -119,10 +119,26 @@ function load_plane() {
  * @return
  */
 function load_sun() {
+    // Create the yellow ball model.
     sun = new THREE.Mesh(
         new THREE.SphereGeometry(10, 10, 10),
         new THREE.MeshPhongMaterial({color: 0xFFFF66, emissive: 0xFFFF88})
     );
+
+    // Create a spotlight to provide light.
+    spotLight = new THREE.SpotLight(0xFFFFFF, 1);
+    spotLight.position.set(500, 250, 500);
+    spotLight.target.position.set(0, 0, 0);
+    spotLight.castShadow = true;
+    spotLight.shadowMapWidth = 1024*2;
+    spotLight.shadowMapHeight = 1024*2;
+    spotLight.shadowCameraNear = 1;
+    spotLight.shadowCameraFar = 5000;
+    spotLight.shadowCameraFov = 90;
+    spotLight.shadowDarkness = 0.1;
+
+    sun.add(spotLight);
+
     return sun;
 }
 
@@ -142,7 +158,7 @@ function init() {
 
     // Create a top level scene object, to add geometry too.
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0091D8, 0.0002);
+    scene.fog = new THREE.FogExp2(0xFFFFFF, 0.0002);
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
@@ -156,20 +172,14 @@ function init() {
     scene.add(sun);
 
     // LIGHTS:
-    spotLight = new THREE.SpotLight(0xFFFFFF, 1);
-    spotLight.position.set(500, 250, 500);
-    spotLight.target.position.set(0, 0, 0);
-    spotLight.castShadow = true;
-    spotLight.shadowMapWidth = 1024*2;
-    spotLight.shadowMapHeight = 1024*2;
-    spotLight.shadowCameraNear = 1;
-    spotLight.shadowCameraFar = 5000;
-    spotLight.shadowCameraFov = 90;
-    spotLight.shadowDarkness = 0.1;
-    scene.add(spotLight);
 
-    var ambientLight = new THREE.AmbientLight(0x888888);
+    //scene.add(spotLight);
+
+    var ambientLight = new THREE.AmbientLight(0x666666);
     scene.add(ambientLight);
+
+    var hemiLight = new THREE.HemisphereLight( 0x9AC2FF, 0x00AA00, 0.6 );
+    scene.add(hemiLight);
 
     // RENDERER:
     renderer = new THREE.WebGLRenderer({antialias: true});
@@ -225,10 +235,9 @@ function onWindowResize() {
 
 function render() {
     TWEEN.update();
-    spotLight.position.x = 500 * Math.cos(clock.getElapsedTime() * 0.05);
-    spotLight.position.z = 500 * Math.sin(clock.getElapsedTime() * 0.05);
-    spotLight.position.y = 350 + 250*Math.sin(clock.getElapsedTime() * 0.05);
-    spotLight.lookAt(new THREE.Vector3(0, 0, 0));
-    sun.position.set(spotLight.position.x, spotLight.position.y, spotLight.position.z);
+    sun.position.x = 500 * Math.cos(clock.getElapsedTime() * 0.05);
+    sun.position.z = 500 * Math.sin(clock.getElapsedTime() * 0.05);
+    sun.position.y = 350 + 250*Math.sin(clock.getElapsedTime() * 0.05);
+    sun.lookAt(new THREE.Vector3(0, 0, 0));
     renderer.render(scene, camera);
 }
