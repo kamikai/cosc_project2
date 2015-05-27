@@ -154,11 +154,15 @@ function init() {
     // Load mouse event handlers to manage panning, zooming, and rotating.
     controls = new THREE.OrbitControls(camera);
     controls.damping = 0.2;
-    controls.addEventListener('change', render); // Triger a render when the controls update.
+    //controls.addEventListener('change', render); // Triger a render when the controls update.
+    controls.userPan = false;
+    controls.userPanSpeed = 0.0;
+    controls.maxDistance = 1000.0;
+    controls.maxPolarAngle = Math.PI * 0.495;
 
     // Create a top level scene object, to add geometry too.
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xFFFFFF, 0.0002);
+    scene.fog = new THREE.FogExp2(0xAAAAFF, 0.0002);
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
@@ -222,14 +226,14 @@ function init() {
 }
 
 
-
 /**
  * Resize the canvas when the window size is modified.
  * (Currently broken -> get white screen?).
  */
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
-    renderer.setSize(window.innerWidth / window.innerHeight);
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
     render();
 }
 
