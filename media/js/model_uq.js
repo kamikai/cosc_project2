@@ -42,7 +42,7 @@ function animate() {
  */
 function load_buildings () {
     // Load textures.
-    var spec_map = THREE.ImageUtils.loadTexture('media/images/sandstone_spec.jpg'),
+    var spec_map = THREE.ImageUtils.loadTexture('media/images/big_sandstone.jpg'),
         bump_map = THREE.ImageUtils.loadTexture('media/images/sandstone_bump.jpg');
 
     spec_map.wrapS = THREE.RepeatWrapping;
@@ -52,12 +52,12 @@ function load_buildings () {
 
     buildings = new THREE.Group(); // Make a group that contains all buildings.
     var building_material = new THREE.MeshPhongMaterial({
-        color: 0xB59524,
+        color: 0xFFAA76,
         shininess: 50,
-        specular: 0xFFEE77,
+        //specular: 0xFFEE77,
         map: spec_map,
         bumpMap: bump_map,
-        bumpScale: 0.5
+        bumpScale: 0.05
     });
 
     // Iterate building data (defined in data.js).
@@ -97,20 +97,33 @@ function load_buildings () {
     return buildings
 }
 
+
 /**
  * Function to crete, (texture?) and position the world plain.
  * @return a mesh representing
  */
 function load_plane() {
+    // Bottom plane.
+    var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
+    var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A, shininess: 5, specular: 0x004400});
+    var plane = new THREE.Mesh(plane_geometry, plane_material);
+    plane.rotateX(radians(-90)); // Rotate to flat.
+    plane.receiveShadow = true;
 
+    return plane;
 }
+
 
 /**
  * Function to create the sun geometry, and contains a light.
  * @return
  */
 function load_sun() {
-
+    sun = new THREE.Mesh(
+        new THREE.SphereGeometry(10, 10, 10),
+        new THREE.MeshPhongMaterial({color: 0xFFFF66, emissive: 0xFFFF88})
+    );
+    return sun;
 }
 
 
@@ -132,21 +145,14 @@ function init() {
     scene.fog = new THREE.FogExp2(0x0091D8, 0.0002);
 
     // WORLD:
+    // Load geometry, using loading functions for neatness.
+    var plane = load_plane();
+    buildings = load_buildings(); // Load all building into global variable.
+    sun = load_sun();
 
-    // Bottom plane.
-    var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
-    var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A, shininess: 5, specular: 0x004400});
-    var plane = new THREE.Mesh(plane_geometry, plane_material);
-    plane.rotateX(radians(-90)); // Rotate to flat.
-    plane.receiveShadow = true;
-    scene.add(plane); // Add it to the global scene.
-
-    buildings = load_buildings();
+    // Add all loaded geometry to the scene.
+    scene.add(plane);
     scene.add(buildings);
-
-    // Create a yellow ball as the 'Sun'
-    sun = new THREE.Mesh(new THREE.SphereGeometry(10, 10, 10),
-                         new THREE.MeshPhongMaterial({color: 0xFFFF66, emissive: 0xFFFF88}));
     scene.add(sun);
 
     // LIGHTS:
