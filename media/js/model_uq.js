@@ -42,8 +42,8 @@ function animate() {
  */
 function load_buildings () {
     // Load textures.
-    var spec_map = THREE.ImageUtils.loadTexture('media/images/big_sandstone.jpg'),
-        bump_map = THREE.ImageUtils.loadTexture('media/images/sandstone_bump.jpg');
+    var spec_map = THREE.ImageUtils.loadTexture('media/images/sandstone_spec.png'),
+        bump_map = THREE.ImageUtils.loadTexture('media/images/sandstone_bump.png');
 
     spec_map.wrapS = THREE.RepeatWrapping;
     spec_map.wrapT = THREE.RepeatWrapping;
@@ -52,9 +52,9 @@ function load_buildings () {
 
     buildings = new THREE.Group(); // Make a group that contains all buildings.
     var building_material = new THREE.MeshPhongMaterial({
-        color: 0xFFAA76,
-        shininess: 0,
-        specular: 0xFF8844,
+        //color: 0xFFAA76,
+        shininess: 10,
+        //specular: 0xFF8844,
         map: spec_map,
         bumpMap: bump_map,
         bumpScale: 0.5
@@ -75,7 +75,7 @@ function load_buildings () {
         for (var j = 0; j < BUILDING_DATA[i].levels; j++) {
             var level = new THREE.Mesh(level_geometry, building_material.clone());
             //level.material.color.setHSL(0.1 + 0.05 * (j / BUILDING_DATA[i].levels), 1, 0.6);
-            level.material.color.setHSL(0.1+(j / 100), 1, 0.5);
+            //level.material.color.setHSL(0.1+(j / 100), 1, 0.5);
             level.position.z = -7.5 * j; // Move each level to correct height.
             level.castShadow = true;
             level.receiveShadow = true;
@@ -128,8 +128,6 @@ function load_sun() {
 
     // Create a spotlight to provide light.
     spotLight = new THREE.SpotLight(0xFFFFFF, 1);
-    spotLight.position.set(500, 250, 500);
-    spotLight.target.position.set(0, 0, 0);
     spotLight.castShadow = true;
     spotLight.shadowMapWidth = 1024*2;
     spotLight.shadowMapHeight = 1024*2;
