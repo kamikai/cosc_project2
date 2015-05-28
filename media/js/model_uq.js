@@ -1,5 +1,5 @@
 /**
- * Created by tkc on 7/05/15.
+ * Created by Thomas Cranny on 7/05/15.
  */
 
 // Declare variables used as globals.
@@ -188,13 +188,32 @@ function load_skybox() {
     // Create sky mesh:
     var skybox_dimensions = 3e4;
     var skybox = new THREE.Mesh(
-        new THREE.CubeGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
+        new THREE.BoxGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
         sky_material
     );
 
     return skybox;
 }
 
+/**
+ * Loads test geometry using shaders materials.
+ * Implicitly adds geometry to the scene automatically.
+ * @return null
+ */
+function load_shader_test() {
+    var cube_material = new THREE.ShaderMaterial({
+        vertexShader: document.getElementById("test-vertex-shader").innerHTML,
+        fragmentShader: document.getElementById("test-fragment-shader").innerHTML
+    });
+
+    var hyper_cube = new THREE.Mesh(
+        new THREE.BoxGeometry(100, 100, 100),
+        //new THREE.MeshPhongMaterial({color: 0xFF0000})
+        cube_material
+    );
+    hyper_cube.position.y += 50;
+    scene.add(hyper_cube);
+}
 
 /**
  * Initialising function. Called to establish the scene, geometry, and lighting.
@@ -219,16 +238,18 @@ function init() {
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
-    var plane = load_plane();
+    var plane = load_plane(),
+        skybox = load_skybox(); // Load the skybox with textures mapped.
     buildings = load_buildings(); // Load all buildings into global variable.
     sun = load_sun(); // load sub with a directional light included.
-    skybox = load_skybox(); // Load the skybox with textures mapped.
 
     // Add all loaded geometry to the scene.
     scene.add(plane);
     scene.add(buildings);
     scene.add(sun);
     scene.add(skybox);
+
+    load_shader_test(); // Include testing geometry usiung shaders.
 
     // LIGHTS:
     var ambientLight = new THREE.AmbientLight(0x666666),
