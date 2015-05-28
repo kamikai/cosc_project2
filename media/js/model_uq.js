@@ -6,6 +6,7 @@
 var container, stats;
 var camera, controls, scene, renderer;
 var buildings, sun;
+var uniforms;
 
 var settings = {
     width: window.innerWidth,
@@ -29,10 +30,12 @@ animate();
  * Keeps the frame rate consistent, updates the UI and triggers a render call.
  */
 function animate() {
-    requestAnimationFrame(animate);
-    render();
+    uniforms.amplitude.value = Math.sin(clock.getElapsedTime());
     controls.update();
     stats.update();
+
+    render();
+    requestAnimationFrame(animate);
 }
 
 
@@ -201,18 +204,46 @@ function load_skybox() {
  * @return null
  */
 function load_shader_test() {
-    var cube_material = new THREE.ShaderMaterial({
+
+    // Create attribute object for the shader to link with.
+    var attributes = {
+        displacement: {
+            type: 'f', // A float.
+            value: [] // Empty array.
+        }
+    };
+
+    // Create uniform data for the shader to use.
+    uniforms = {
+        amplitude: {
+            type: 'f',
+            value: 0
+        }
+    };
+
+    var shader_material = new THREE.ShaderMaterial({
+        uniforms: uniforms,
+        attributes: attributes,
         vertexShader: document.getElementById("test-vertex-shader").innerHTML,
         fragmentShader: document.getElementById("test-fragment-shader").innerHTML
     });
 
-    var hyper_cube = new THREE.Mesh(
-        new THREE.BoxGeometry(100, 100, 100),
-        //new THREE.MeshPhongMaterial({color: 0xFF0000})
-        cube_material
+    // Construct and add the cube model.
+    var super_solid = new THREE.Mesh(
+        new THREE.SphereGeometry(25, 50, 50),
+        shader_material
     );
-    hyper_cube.position.y += 50;
-    scene.add(hyper_cube);
+    super_solid.position.set(-200, 50, -200);
+    scene.add(super_solid);
+
+    // Populate shader attributes with vertex data.
+    var verts = super_solid.geometry.vertices,
+        values = attributes.displacement.value;
+    for (var v = 0; v < verts.length; v++) {
+        values.push(Math.random() * 30);
+    }
+
+
 }
 
 /**

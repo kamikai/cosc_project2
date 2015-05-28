@@ -7,13 +7,13 @@
     <script type="application/javascript" src="bower_components/tweenjs/build/tween.min.js"></script>
 
     <script type="x-shader/x-vertex" id="test-vertex-shader">
-        attribute float displacement;
-        // Share normals between fragment and vertex shaders.
-        varying vec3 vNormal;
+        uniform float amplitude;
+        attribute float displacement; // Reference attribute linked with.
+        varying vec3 vNormal; // Share normals between fragment and vertex shaders.
 
         void main() {
             vNormal = normal;
-            vec3 newPosition = position + normal * vec3(displacement);
+            vec3 newPosition = position + normal * vec3(displacement * amplitude);
             gl_Position = projectionMatrix *
                           modelViewMatrix *
                           vec4(newPosition, 1.0);
