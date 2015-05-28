@@ -207,23 +207,22 @@ function init() {
     // Load mouse event handlers to manage panning, zooming, and rotating.
     controls = new THREE.OrbitControls(camera);
     controls.damping = 0.2;
-    //controls.addEventListener('change', render); // Triger a render when the controls update.
-    controls.userPan = false;
+    controls.addEventListener('change', render); // Trigger a render call when the controls update.
+    //controls.userPan = false;
     controls.userPanSpeed = 0.0;
     controls.maxDistance = 2000.0;
     controls.maxPolarAngle = Math.PI * 0.495;
 
     // Create a top level scene object, to add geometry too.
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xAAAAFF, 0.0001);
+    scene.fog = new THREE.FogExp2(0xAAAAFF, 0.0001); // The Fade out fog colour.
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
     var plane = load_plane();
-    buildings = load_buildings(); // Load all building into global variable.
-    sun = load_sun();
-    skybox = load_skybox();
-
+    buildings = load_buildings(); // Load all buildings into global variable.
+    sun = load_sun(); // load sub with a directional light included.
+    skybox = load_skybox(); // Load the skybox with textures mapped.
 
     // Add all loaded geometry to the scene.
     scene.add(plane);
@@ -248,7 +247,7 @@ function init() {
     renderer.shadowMapWidth = 1024;
     renderer.shadowMapHeight = 1024;
 
-    // DOM MANIPULATION:
+    // DOM MANIPULATION: Add scene to webpage.
     container = document.getElementById('container');
     container.appendChild(renderer.domElement);
 
