@@ -11,8 +11,8 @@ var settings = {
     width: window.innerWidth,
     height: window.innerHeight,
     view_angle: 75,
-    near: 1,
-    far: 10000
+    near: 0.01,
+    far: 5e4
 };
 
 settings.aspect = settings.width / settings.height;
@@ -104,9 +104,22 @@ function load_buildings () {
  * @return a mesh representing
  */
 function load_plane() {
-    // Bottom plane.
-    var plane_geometry = new THREE.PlaneBufferGeometry(2000, 2000);
-    var plane_material = new THREE.MeshPhongMaterial({color: 0x5B9D3A, shininess: 5, specular: 0x004400});
+
+    var grass_repeats = 1000,
+        grass_tex = THREE.ImageUtils.loadTexture('media/images/grass.jpg');
+    grass_tex.wrapS = grass_tex.wrapT = THREE.RepeatWrapping;
+
+    grass_tex.repeat.set(grass_repeats, grass_repeats);
+
+    var plane_size = 2e4;
+    var plane_geometry = new THREE.PlaneBufferGeometry(plane_size, plane_size);
+    var plane_material = new THREE.MeshPhongMaterial({
+        shininess: 10,
+        diffuse: 0xFF0000,
+        map: grass_tex,
+        bumpMap: grass_tex,
+        bumpScale: 0.1
+    });
     var plane = new THREE.Mesh(plane_geometry, plane_material);
     plane.rotateX(radians(-90)); // Rotate to flat.
     plane.receiveShadow = true;
@@ -173,8 +186,9 @@ function load_skybox() {
     });
 
     // Create sky mesh:
+    var skybox_dimensions = 3e4;
     var skybox = new THREE.Mesh(
-        new THREE.CubeGeometry(1e4, 1e4, 1e4),
+        new THREE.CubeGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
         sky_material
     );
 
@@ -201,7 +215,7 @@ function init() {
 
     // Create a top level scene object, to add geometry too.
     scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0xAAAAFF, 0.0002);
+    scene.fog = new THREE.FogExp2(0xAAAAFF, 0.0001);
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
