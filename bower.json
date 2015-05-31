@@ -15,6 +15,7 @@
   ],
   "dependencies": {
     "threejs": "*",
-    "tweenjs": "*"
+    "tweenjs": "*",
+    "reveal.js": "~3.1.0"
   }
 }

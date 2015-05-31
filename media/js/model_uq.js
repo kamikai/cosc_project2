@@ -280,7 +280,7 @@ function init() {
     scene.add(sun);
     scene.add(skybox);
 
-    load_shader_test(); // Include testing geometry usiung shaders.
+    //load_shader_test(); // Include testing geometry usiung shaders.
 
     // LIGHTS:
     var ambientLight = new THREE.AmbientLight(0x666666),
