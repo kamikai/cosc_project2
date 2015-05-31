@@ -30,7 +30,7 @@ animate();
  * Keeps the frame rate consistent, updates the UI and triggers a render call.
  */
 function animate() {
-    uniforms.amplitude.value = Math.sin(clock.getElapsedTime());
+    //uniforms.amplitude.value = Math.sin(clock.getElapsedTime()); // Update shader calls.
     controls.update();
     stats.update();
 
@@ -65,8 +65,6 @@ function load_buildings () {
 
     // Iterate building data (defined in data.js).
     for (var i = 0; i < BUILDING_DATA.length; i++) {
-        console.log('Adding: ' + BUILDING_DATA[i].name);
-
         var extrudeSettings = {amount: 7.5, bevelEnabled: false};
 
         var level_shape = new THREE.Shape(BUILDING_DATA[i].points);
@@ -103,10 +101,11 @@ function load_buildings () {
 
 
 /**
- * Function to crete, (texture?) and position the world plain.
+ * Function to crete, and position the worlds terrain.
+ * Incorporates subtracting lakes and adding a water plane underneath.
  * @return a mesh representing
  */
-function load_plane() {
+function load_terrain() {
 
     var grass_repeats = 1000,
         grass_tex = THREE.ImageUtils.loadTexture('media/images/grass.jpg');
@@ -114,20 +113,32 @@ function load_plane() {
 
     grass_tex.repeat.set(grass_repeats, grass_repeats);
 
-    var plane_size = 2e4;
-    var plane_geometry = new THREE.PlaneBufferGeometry(plane_size, plane_size);
-    var plane_material = new THREE.MeshPhongMaterial({
-        shininess: 10,
-        diffuse: 0xFF0000,
-        map: grass_tex,
-        bumpMap: grass_tex,
-        bumpScale: 0.1
-    });
-    var plane = new THREE.Mesh(plane_geometry, plane_material);
-    plane.rotateX(radians(-90)); // Rotate to flat.
-    plane.receiveShadow = true;
+    var plane_size = 2e4,
+        plane_height = 100;
+    var plane_geometry = new THREE.BoxGeometry(plane_size, plane_size, plane_height),
+        plane_material = new THREE.MeshPhongMaterial({
+            shininess: 10,
+            diffuse: 0xFF0000,
+            map: grass_tex,
+            bumpScale: 0.1
+        });
+    var plane_mesh = new THREE.Mesh(plane_geometry);
+    plane_mesh.rotateX(radians(-90)); // Rotate to flat.
+    plane_mesh.position.y -= plane_height / 2; // Offset by half thickness.
+    var plane_bsp = new ThreeBSP(plane_mesh);
 
-    return plane;
+    var lake_geometry = new THREE.SphereGeometry(50, 50, 50);
+    var lake_mesh = new THREE.Mesh(lake_geometry, new THREE.MeshPhongMaterial({color: 0x0088FF}));
+    lake_mesh.position.set(300, 25, 300);
+    var lake_bsp = new ThreeBSP(lake_mesh);
+
+    var terrain_bsp = plane_bsp.subtract(lake_bsp);
+
+    var terrain = terrain_bsp.toMesh(plane_material);
+    terrain.geometry.computeVertexNormals();
+    terrain.receiveShadow = true;
+
+    return terrain;
 }
 
 
@@ -269,7 +280,7 @@ function init() {
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
-    var plane = load_plane(),
+    var plane = load_terrain(),
         skybox = load_skybox(); // Load the skybox with textures mapped.
     buildings = load_buildings(); // Load all buildings into global variable.
     sun = load_sun(); // load sub with a directional light included.
