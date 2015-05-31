@@ -107,36 +107,55 @@ function load_buildings () {
  */
 function load_terrain() {
 
+    // Load
     var grass_repeats = 1000,
         grass_tex = THREE.ImageUtils.loadTexture('media/images/grass.jpg');
     grass_tex.wrapS = grass_tex.wrapT = THREE.RepeatWrapping;
-
     grass_tex.repeat.set(grass_repeats, grass_repeats);
 
-    var plane_size = 2e4,
-        plane_height = 100;
-    var plane_geometry = new THREE.BoxGeometry(plane_size, plane_size, plane_height),
-        plane_material = new THREE.MeshPhongMaterial({
+    // Create primary ground 'block'.
+    var ground_size = 2e4,
+        ground_height = 10;
+    var ground_geometry = new THREE.BoxGeometry(ground_size, ground_size, ground_height),
+        ground_material = new THREE.MeshPhongMaterial({
             shininess: 10,
-            diffuse: 0xFF0000,
+            color: 0xFFFFFF,
+            diffuse: 0x00FF00,
             map: grass_tex,
             bumpScale: 0.1
         });
-    var plane_mesh = new THREE.Mesh(plane_geometry);
-    plane_mesh.rotateX(radians(-90)); // Rotate to flat.
-    plane_mesh.position.y -= plane_height / 2; // Offset by half thickness.
-    var plane_bsp = new ThreeBSP(plane_mesh);
+    var ground_mesh = new THREE.Mesh(ground_geometry);
+    ground_mesh.rotateX(radians(-90)); // Rotate to flat.
+    ground_mesh.position.y -= ground_height / 2; // Offset by half thickness.
+    var ground_bsp= new ThreeBSP(ground_mesh);
 
+    // Define mesh(es) to subtract from the ground.
     var lake_geometry = new THREE.SphereGeometry(50, 50, 50);
     var lake_mesh = new THREE.Mesh(lake_geometry, new THREE.MeshPhongMaterial({color: 0x0088FF}));
     lake_mesh.position.set(300, 25, 300);
     var lake_bsp = new ThreeBSP(lake_mesh);
 
-    var terrain_bsp = plane_bsp.subtract(lake_bsp);
+    // Create a lowered surface to render as water.
+    var water_geometry = new THREE.PlaneGeometry(ground_size/10, ground_size/10);
+    // TODO: Create water shader.
+    var water_material = new THREE.MeshPhongMaterial({
+        color: 0x0088FF,
+        shininess: 100,
+        polygonOffset: true,  // Poly offset reduces Z-fighting.
+        polygonOffsetFactor: 1.0,
+        polygonOffsetUnits: 4.0
+    });
+    var water_mesh = new THREE.Mesh(water_geometry, water_material);
+    //water_mesh.rotateX(radians(-90)); // Rotate to flat as well.
+    water_mesh.position.z += ground_height/2 - 5;
 
-    var terrain = terrain_bsp.toMesh(plane_material);
+    // Create final terrain structure, by subtracting bodies of water.
+    var terrain_bsp = ground_bsp.subtract(lake_bsp);
+
+    var terrain = terrain_bsp.toMesh(ground_material);
     terrain.geometry.computeVertexNormals();
     terrain.receiveShadow = true;
+    terrain.add(water_mesh); // Add later of water.
 
     return terrain;
 }
@@ -280,13 +299,13 @@ function init() {
 
     // WORLD:
     // Load geometry, using loading functions for neatness.
-    var plane = load_terrain(),
+    var terrain = load_terrain(),
         skybox = load_skybox(); // Load the skybox with textures mapped.
     buildings = load_buildings(); // Load all buildings into global variable.
     sun = load_sun(); // load sub with a directional light included.
 
     // Add all loaded geometry to the scene.
-    scene.add(plane);
+    scene.add(terrain);
     scene.add(buildings);
     scene.add(sun);
     scene.add(skybox);
