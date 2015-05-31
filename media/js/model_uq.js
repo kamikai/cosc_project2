@@ -15,7 +15,6 @@ var settings = {
     near: 0.01,
     far: 5e4
 };
-
 settings.aspect = settings.width / settings.height;
 
 var clock = new THREE.Clock();  // Create a clock for managing events.
@@ -238,7 +237,7 @@ function load_skybox() {
         side: THREE.BackSide
     });
 
-    // Create sky mesh:
+    // Create and return sky mesh:
     var skybox_dimensions = 3e4;
     return new THREE.Mesh(
         new THREE.BoxGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
