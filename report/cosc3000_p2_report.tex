@@ -1,0 +1,43 @@
+\documentclass[12pt]{article}
+
+% ============
+% | Preamble |
+% ============
+
+    % Package Imports
+        \usepackage[nottoc,numbib]{tocbibind}
+        \usepackage{blindtext}
+        \usepackage{float}  % Force image insertion position.
+        \usepackage{graphicx}
+        \usepackage{hyperref}  % Use URLs (for bibliography).
+        \usepackage{pdftexcmds}
+        \usepackage{minted}
+        \usepackage{titlesec}
+        \usepackage[margin=2cm]{geometry}
+
+    % Other Stuff
+        \graphicspath{ {media/} } % Specify path to content.
+
+        \newcommand{\HRule}{\rule{\linewidth}{.5mm}} % Draw lines for title page.
+        \newcommand{\sectionbreak}{\clearpage} % Define new pages after sections (Broken)?
+
+% ================
+% | End Preamble |
+% ================
+
+% ===========
+% | Content |
+% ===========
+
+\begin{document}
+    \input{sections/0_title.tex}
+    \input{sections/1_introduction.tex}
+    \input{sections/2_methods.tex}
+    \input{sections/3_results.tex}
+    \input{sections/4_discussion.tex}
+    \input{sections/5_references.tex}
+\end{document}
+
+% ===============
+% | End Content |
+% ===============
