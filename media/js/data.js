@@ -1,4 +1,4 @@
-var BUILDING_DATA;
+var BUILDING_DATA, LAKE_DATA;
 
 BUILDING_DATA = [
     {
@@ -337,4 +337,85 @@ BUILDING_DATA = [
             new THREE.Vector2(61, 24),
         ]
     },
+];
+
+LAKE_DATA = [
+    {
+        position: new THREE.Vector2(1320, 1254),
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 15),
+            new THREE.Vector2(27, 66),
+            new THREE.Vector2(67, 24),
+            new THREE.Vector2(67, 8),
+        ]
+    },
+    {
+        position: new THREE.Vector2(1355, 1291),
+        points: [
+            new THREE.Vector2(0, 51),
+            new THREE.Vector2(5, 64),
+            new THREE.Vector2(9, 71),
+            new THREE.Vector2(17, 80),
+            new THREE.Vector2(27, 83),
+            new THREE.Vector2(46, 88),
+            new THREE.Vector2(60, 87),
+            new THREE.Vector2(76, 84),
+            new THREE.Vector2(93, 76),
+            new THREE.Vector2(95, 71),
+            new THREE.Vector2(82, 50),
+            new THREE.Vector2(88, 35),
+            new THREE.Vector2(82, 21),
+            new THREE.Vector2(85, 10),
+            new THREE.Vector2(85, 0),
+            new THREE.Vector2(52, 9),
+            new THREE.Vector2(34, 10),
+            new THREE.Vector2(4, 38),
+
+        ]
+    },
+    {
+        position: new THREE.Vector2(1072, 1300),
+        points: [
+            new THREE.Vector2(0, 194),
+            new THREE.Vector2(0, 209),
+            new THREE.Vector2(72, 262),
+            new THREE.Vector2(120, 263),
+            new THREE.Vector2(194, 225),
+            new THREE.Vector2(233, 175),
+            new THREE.Vector2(242, 136),
+            new THREE.Vector2(255, 119),
+            new THREE.Vector2(272, 101),
+            new THREE.Vector2(247, 50),
+            new THREE.Vector2(216, 43),
+            new THREE.Vector2(166, 0),
+            new THREE.Vector2(129, 9),
+            new THREE.Vector2(140, 36),
+            new THREE.Vector2(146, 78),
+            new THREE.Vector2(137, 133),
+            new THREE.Vector2(133, 150),
+            new THREE.Vector2(85, 172),
+            new THREE.Vector2(63, 187),
+            new THREE.Vector2(13, 187),
+            new THREE.Vector2(7, 193),
+        ]
+    },
+    {
+        position: new THREE.Vector2(297, 18),
+        points: [
+            new THREE.Vector2(0, 169),
+            new THREE.Vector2(599, 246),
+            new THREE.Vector2(857, 342),
+            new THREE.Vector2(1069, 504),
+            new THREE.Vector2(1209, 728),
+            new THREE.Vector2(1361, 1142),
+            new THREE.Vector2(1400, 1646),
+            new THREE.Vector2(1367, 1732),
+            new THREE.Vector2(1239, 1800),
+            new THREE.Vector2(1430, 1852),
+            new THREE.Vector2(1703, 950),
+            new THREE.Vector2(1730, 504),
+            new THREE.Vector2(59, 0),
+        ]
+    }
 ];

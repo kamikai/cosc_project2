@@ -62,11 +62,9 @@ function load_buildings () {
         bumpMap: bump_map,
         bumpScale: 0.5
     });
-
+    var extrudeSettings = {amount: 7.5, bevelEnabled: false};
     // Iterate building data (defined in data.js).
     for (var i = 0; i < BUILDING_DATA.length; i++) {
-        var extrudeSettings = {amount: 7.5, bevelEnabled: false};
-
         var level_shape = new THREE.Shape(BUILDING_DATA[i].points);
         var level_geometry = new THREE.ExtrudeGeometry(level_shape, extrudeSettings);
 
@@ -96,18 +94,18 @@ function load_buildings () {
         buildings.add(building); // Add this building to the buildings group.
     }
 
+    //buildings.mergeVertices();
+
     return buildings
 }
 
 
 /**
- * Function to crete, and position the worlds terrain.
+ * Function to crete and position the worlds terrain.
  * Incorporates subtracting lakes and adding a water plane underneath.
- * @return a mesh representing
+ * @return a mesh representing the worlds terrain.
  */
 function load_terrain() {
-
-    // Load
     var grass_repeats = 1000,
         grass_tex = THREE.ImageUtils.loadTexture('media/images/grass.jpg');
     grass_tex.wrapS = grass_tex.wrapT = THREE.RepeatWrapping;
@@ -119,43 +117,65 @@ function load_terrain() {
     var ground_geometry = new THREE.BoxGeometry(ground_size, ground_size, ground_height),
         ground_material = new THREE.MeshPhongMaterial({
             shininess: 10,
-            color: 0xFFFFFF,
+            color: 0xFFFF44,
             diffuse: 0x00FF00,
-            map: grass_tex,
-            bumpScale: 0.1
+            map: grass_tex
+            //polygonOffset: true,
+            //depthTest: true,
+            //polygonOffsetFactor: 1,
+            //polygonOffsetUnits: 1
         });
+    // Create and position Mesh:
     var ground_mesh = new THREE.Mesh(ground_geometry);
     ground_mesh.rotateX(radians(-90)); // Rotate to flat.
-    ground_mesh.position.y -= ground_height / 2; // Offset by half thickness.
-    var ground_bsp= new ThreeBSP(ground_mesh);
+    ground_mesh.position.y -= ground_height / 2; // Lower so top at y=0.
+    var ground_bsp = new ThreeBSP(ground_mesh); // Initialise constructive geometry object.
 
-    // Define mesh(es) to subtract from the ground.
-    var lake_geometry = new THREE.SphereGeometry(50, 50, 50);
-    var lake_mesh = new THREE.Mesh(lake_geometry, new THREE.MeshPhongMaterial({color: 0x0088FF}));
-    lake_mesh.position.set(300, 25, 300);
-    var lake_bsp = new ThreeBSP(lake_mesh);
+    var water_bodies = new THREE.Group(),
+        water_material = new THREE.MeshPhongMaterial({
+            color: 0x0088FF,
+            shininess: 100,
+            side: THREE.DoubleSide
+        });
 
-    // Create a lowered surface to render as water.
-    var water_geometry = new THREE.PlaneGeometry(ground_size/10, ground_size/10);
-    // TODO: Create water shader.
-    var water_material = new THREE.MeshPhongMaterial({
-        color: 0x0088FF,
-        shininess: 100,
-        polygonOffset: true,  // Poly offset reduces Z-fighting.
-        polygonOffsetFactor: 1.0,
-        polygonOffsetUnits: 4.0
-    });
-    var water_mesh = new THREE.Mesh(water_geometry, water_material);
-    //water_mesh.rotateX(radians(-90)); // Rotate to flat as well.
-    water_mesh.position.z += ground_height/2 - 5;
+    // Iterate and subtract water bodies from the terrain.
+    var extrudeSettings = {
+            amount: 10,
+            bevelEnabled: true,
+            bevelThickness: 10,
+            bevelSize: 0
+        };
+    for (var i = 0; i < LAKE_DATA.length; i++) {
+        // Load lake shape.
+        var lake_shape = new THREE.Shape(LAKE_DATA[i].points);
+        var water_geometry = new THREE.ShapeGeometry(lake_shape);
+        // Create and position lake surface.
+        var water_mesh = new THREE.Mesh(water_geometry, water_material);
+        water_mesh.position.x = LAKE_DATA[i].position.x - 1000;
+        water_mesh.position.z = LAKE_DATA[i].position.y - 1000;
+        water_mesh.rotateX(radians(90));
+        //water_mesh.scale.y *= 1.1; // Scale outwards to reach edges of lake removed by bevel.
+        water_bodies.add(water_mesh);
 
-    // Create final terrain structure, by subtracting bodies of water.
-    var terrain_bsp = ground_bsp.subtract(lake_bsp);
+        // Create lake solid to subtract from the land.
+        var lake_geometry = new THREE.ExtrudeGeometry(lake_shape, extrudeSettings);
+        var lake_mesh = new THREE.Mesh(lake_geometry, new THREE.MeshPhongMaterial({color:0xFF0000}));
+        // Lay down flat and position.
+        lake_mesh.rotateX(radians(90));
+        lake_mesh.position.x = LAKE_DATA[i].position.x - 1000;
+        lake_mesh.position.z = LAKE_DATA[i].position.y - 1000;
+        lake_mesh.position.y += ground_height + (extrudeSettings.amount / 4); // Move up to flush with ground
+        var lake_bsp = new ThreeBSP(lake_mesh); // Create constructive solid geometry.
+        ground_bsp = ground_bsp.subtract(lake_bsp); // Cut away from the ground.
+    }
 
-    var terrain = terrain_bsp.toMesh(ground_material);
-    terrain.geometry.computeVertexNormals();
+    water_bodies.rotateX(radians(90));
+    water_bodies.position.z += 3;
+
+    var terrain = ground_bsp.toMesh(ground_material);
+    //terrain.geometry.computeVertexNormals(); // Ruins lighting?
     terrain.receiveShadow = true;
-    terrain.add(water_mesh); // Add later of water.
+    terrain.add(water_bodies);
 
     return terrain;
 }
@@ -173,7 +193,7 @@ function load_sun() {
     );
 
     // Create a spotlight to provide light.
-    spotLight = new THREE.SpotLight(0xFFFFFF, 1);
+    var spotLight = new THREE.SpotLight(0xFFFFFF, 1);
     spotLight.castShadow = true;
     spotLight.shadowMapWidth = 1024*2;
     spotLight.shadowMapHeight = 1024*2;
@@ -220,61 +240,12 @@ function load_skybox() {
 
     // Create sky mesh:
     var skybox_dimensions = 3e4;
-    var skybox = new THREE.Mesh(
+    return new THREE.Mesh(
         new THREE.BoxGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
         sky_material
     );
-
-    return skybox;
 }
 
-/**
- * Loads test geometry using shaders materials.
- * Implicitly adds geometry to the scene automatically.
- * @return null
- */
-function load_shader_test() {
-
-    // Create attribute object for the shader to link with.
-    var attributes = {
-        displacement: {
-            type: 'f', // A float.
-            value: [] // Empty array.
-        }
-    };
-
-    // Create uniform data for the shader to use.
-    uniforms = {
-        amplitude: {
-            type: 'f',
-            value: 0
-        }
-    };
-
-    var shader_material = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        attributes: attributes,
-        vertexShader: document.getElementById("test-vertex-shader").innerHTML,
-        fragmentShader: document.getElementById("test-fragment-shader").innerHTML
-    });
-
-    // Construct and add the cube model.
-    var super_solid = new THREE.Mesh(
-        new THREE.SphereGeometry(25, 50, 50),
-        shader_material
-    );
-    super_solid.position.set(-200, 50, -200);
-    scene.add(super_solid);
-
-    // Populate shader attributes with vertex data.
-    var verts = super_solid.geometry.vertices,
-        values = attributes.displacement.value;
-    for (var v = 0; v < verts.length; v++) {
-        values.push(Math.random() * 30);
-    }
-
-
-}
 
 /**
  * Initialising function. Called to establish the scene, geometry, and lighting.
