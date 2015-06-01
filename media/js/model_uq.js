@@ -5,15 +5,17 @@
 // Declare variables used as globals.
 var container, stats;
 var camera, controls, scene, renderer;
-var buildings, sun;
-var uniforms;
+var buildings, sun, skybox;
 
 var settings = {
     width: window.innerWidth,
     height: window.innerHeight,
     view_angle: 75,
     near: 0.01,
-    far: 5e4
+    far: 5e4,
+    use_water_shader: true,
+    building_floors_separate: false,
+    cast_shadows: true
 };
 settings.aspect = settings.width / settings.height;
 
@@ -60,22 +62,33 @@ function load_buildings () {
         bumpScale: 0.5
     });
     var extrudeSettings = {amount: 7.5, bevelEnabled: false};
+
     // Iterate building data (defined in data.js).
     for (var i = 0; i < BUILDING_DATA.length; i++) {
         var level_shape = new THREE.Shape(BUILDING_DATA[i].points);
-        var level_geometry = new THREE.ExtrudeGeometry(level_shape, extrudeSettings);
 
-        var building = new THREE.Group();
 
-        // Iterate the levels of the buildings, adding them and moving them increasingly upwards.
-        for (var j = 0; j < BUILDING_DATA[i].levels; j++) {
-            var level = new THREE.Mesh(level_geometry, building_material.clone());
-            //level.material.color.setHSL(0.1 + 0.05 * (j / BUILDING_DATA[i].levels), 1, 0.6);
-            //level.material.color.setHSL(0.1+(j / 100), 1, 0.5);
-            level.position.z = -7.5 * j; // Move each level to correct height.
-            level.castShadow = true;
-            level.receiveShadow = true;
-            building.add(level); // Add to this levels parent building object.
+        var building;
+
+        // Create building geometry by levels or singular block (as defined in settings)
+
+        if (settings.building_floors_separate) {
+            building = new THREE.Group();
+            var level_geometry = new THREE.ExtrudeGeometry(level_shape, extrudeSettings);
+
+            // Iterate the levels of the buildings, adding them and moving them increasingly upwards.
+            for (var j = 0; j < BUILDING_DATA[i].levels; j++) {
+                var level = new THREE.Mesh(level_geometry, building_material.clone());
+                level.position.z = -7.5 * j; // Move each level to correct height.
+                level.castShadow = true;
+                level.receiveShadow = true;
+                building.add(level); // Add to this levels parent building object.
+            }
+        } else { // Create a single mesh for the building.
+            extrudeSettings.amount = 7.5 * BUILDING_DATA[i].levels;
+            var building_geometry = new THREE.ExtrudeGeometry(level_shape, extrudeSettings);
+            building = new THREE.Mesh(building_geometry, building_material);
+            building.position.y = 7.5 * (BUILDING_DATA[i].levels-1);
         }
 
         building.rotateX(radians(90)); // Stand upright from horizontal.
@@ -128,8 +141,18 @@ function load_terrain() {
     ground_mesh.position.y -= ground_height / 2; // Lower so top at y=0.
     var ground_bsp = new ThreeBSP(ground_mesh); // Initialise constructive geometry object.
 
-    var water_bodies = new THREE.Group(),
+    var water_bodies = new THREE.Group();
+    var water_material;
+
+    if (settings.use_water_shader) {
         water_material = load_water_material();
+    } else {
+        water_material = new THREE.MeshPhongMaterial({
+            color: 0x0088FF,
+            shininess: 100,
+            side: THREE.BackSide
+        })
+    }
 
     // Iterate and subtract water bodies from the terrain.
     var extrudeSettings = {
@@ -187,7 +210,7 @@ function load_sun() {
 
     // Create a spotlight to provide light.
     var spotLight = new THREE.SpotLight(0xFFFFFF, 1);
-    spotLight.castShadow = true;
+    spotLight.castShadow = settings.cast_shadows;
     spotLight.shadowMapWidth = 1024*2;
     spotLight.shadowMapHeight = 1024*2;
     spotLight.shadowCameraNear = 1;
@@ -233,10 +256,12 @@ function load_skybox() {
 
     // Create and return sky mesh:
     var skybox_dimensions = 3e4;
-    return new THREE.Mesh(
+    skybox = new THREE.Mesh(
         new THREE.BoxGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
         sky_material
     );
+
+    return skybox
 }
 
 

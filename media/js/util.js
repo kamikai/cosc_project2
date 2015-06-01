@@ -25,7 +25,7 @@ function load_water_material() {
         // Load shader code from scripts in index.html.
         vertexShader: document.getElementById('water-vertex-shader').innerHTML,
         fragmentShader: document.getElementById('water-fragment-shader').innerHTML,
-        side: THREE.DoubleSide
+        side: THREE.BackSide
     });
 
     THREE.log(water_shader_material);
