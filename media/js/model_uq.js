@@ -54,9 +54,7 @@ function load_buildings () {
 
     buildings = new THREE.Group(); // Make a group that contains all buildings.
     var building_material = new THREE.MeshPhongMaterial({
-        //color: 0xFFAA76,
         shininess: 10,
-        //specular: 0xFF8844,
         map: spec_map,
         bumpMap: bump_map,
         bumpScale: 0.5
@@ -131,11 +129,7 @@ function load_terrain() {
     var ground_bsp = new ThreeBSP(ground_mesh); // Initialise constructive geometry object.
 
     var water_bodies = new THREE.Group(),
-        water_material = new THREE.MeshPhongMaterial({
-            color: 0x0088FF,
-            shininess: 100,
-            side: THREE.DoubleSide
-        });
+        water_material = load_water_material();
 
     // Iterate and subtract water bodies from the terrain.
     var extrudeSettings = {

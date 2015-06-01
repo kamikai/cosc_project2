@@ -10,36 +10,18 @@
 
     <script type="application/javascript" src="bower_components/tweenjs/build/tween.min.js"></script>
 
-    <script type="x-shader/x-vertex" id="test-vertex-shader">
-        uniform float amplitude;
-        attribute float displacement; // Reference attribute linked with.
-        varying vec3 vNormal; // Share normals between fragment and vertex shaders.
-
+    <script type="x-shader/x-vertex" id="water-vertex-shader">
         void main() {
-            vNormal = normal;
-            vec3 newPosition = position + normal * vec3(displacement * amplitude);
             gl_Position = projectionMatrix *
-                          modelViewMatrix *
-                          vec4(newPosition, 1.0);
+                            modelViewMatrix *
+                            vec4(position,1.0);
         }
     </script>
-    <script type="x-shader/x-fragment" id="test-fragment-shader">
-        // Import normals shared from vertex shader.
-        varying vec3 vNormal;
-
+    <script type="x-shader/x-fragment" id="water-fragment-shader">
         void main() {
-            //Calculate dot product and clamp:
-
-            vec3 light = vec3(0.5, 0.2, 1.0);
-            // Ensure it's normalised (converted into unit space).
-            light = normalize(light);
-            // Calculate dot product.
-            float dProd = max(0.0, dot(vNormal, light));
-
-            // Feed to the fragment color.
-            gl_FragColor = vec4(dProd, dProd, dProd, 1.0);
+            gl_FragColor = vec4(0.0, 0.5, 1.0, 1.0);
         }
-    </script>
+</script>
 
 </head>
 
