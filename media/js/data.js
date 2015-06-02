@@ -457,6 +457,81 @@ BUILDING_DATA = [
             new THREE.Vector2(8, 10),
             new THREE.Vector2(10, 19),
         ]
+    },
+    {
+        name: "Building 33",
+        number: 33,
+        levels: 2,
+        position: new THREE.Vector2(1353, 1084),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 36),
+            new THREE.Vector2(38, 24),
+            new THREE.Vector2(6, 3),
+        ]
+    },
+    {
+        name: "Chamberlain Building",
+        number: 35,
+        levels: 3,
+        position: new THREE.Vector2(1177, 857),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 21),
+            new THREE.Vector2(90, 21),
+            new THREE.Vector2(90, 0)
+        ]
+    },
+    {
+        name: "Joyce Ackroyd Building",
+        number: 37,
+        levels: 2,
+        position: new THREE.Vector2(1224, 809),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 18),
+            new THREE.Vector2(63, 18),
+            new THREE.Vector2(63, 0),
+        ]
+    },
+    {
+        name: "Colin Clark Building",
+        number: 39,
+        levels: 4,
+        position: new THREE.Vector2(1169, 759),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 42),
+            new THREE.Vector2(69, 42),
+            new THREE.Vector2(69, 8),
+            new THREE.Vector2(56, 8),
+            new THREE.Vector2(56, 29),
+            new THREE.Vector2(15, 27),
+            new THREE.Vector2(14, 0),
+        ]
+    },
+    {
+        name: "General Purpose North 3",
+        number: "39A",
+        levels: 3,
+        position: new THREE.Vector2(1102, 761),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 19),
+            new THREE.Vector2(7, 22),
+            new THREE.Vector2(0, 34),
+            new THREE.Vector2(44, 85),
+            new THREE.Vector2(54, 87),
+            new THREE.Vector2(54, 71),
+            new THREE.Vector2(20, 31),
+            new THREE.Vector2(47, 54),
+            new THREE.Vector2(43, 0),
+            new THREE.Vector2(13, 11),
+            new THREE.Vector2(6, 11),
+        ]
     }
 ];
 
