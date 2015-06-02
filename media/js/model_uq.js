@@ -166,22 +166,25 @@ function load_terrain() {
         // Load lake shape.
         var lake_shape = new THREE.Shape(LAKE_DATA[i].points);
         var water_geometry = new THREE.ShapeGeometry(lake_shape);
+
         // Create and position lake surface.
         var water_mesh = new THREE.Mesh(water_geometry, water_material);
         water_mesh.position.x = LAKE_DATA[i].position.x - 1000;
         water_mesh.position.z = LAKE_DATA[i].position.y - 1000;
         water_mesh.rotateX(radians(90));
-        //water_mesh.scale.y *= 1.1; // Scale outwards to reach edges of lake removed by bevel.
+
         water_bodies.add(water_mesh);
 
         // Create lake solid to subtract from the land.
         var lake_geometry = new THREE.ExtrudeGeometry(lake_shape, extrudeSettings);
         var lake_mesh = new THREE.Mesh(lake_geometry, new THREE.MeshPhongMaterial({color:0xFF0000}));
+
         // Lay down flat and position.
         lake_mesh.rotateX(radians(90));
         lake_mesh.position.x = LAKE_DATA[i].position.x - 1000;
         lake_mesh.position.z = LAKE_DATA[i].position.y - 1000;
         lake_mesh.position.y += ground_height + (extrudeSettings.amount / 4); // Move up to flush with ground
+
         var lake_bsp = new ThreeBSP(lake_mesh); // Create constructive solid geometry.
         ground_bsp = ground_bsp.subtract(lake_bsp); // Cut away from the ground.
     }
@@ -360,10 +363,15 @@ function onWindowResize() {
 }
 
 function render() {
-    TWEEN.update();
+    TWEEN.update(); // Update building animation progress.
+
+    // Rotate sun in the sky.
     sun.position.x = 500 * Math.cos(clock.getElapsedTime() * 0.05);
     sun.position.z = 500 * Math.sin(clock.getElapsedTime() * 0.05);
     sun.position.y = 350 + 250*Math.sin(clock.getElapsedTime() * 0.05);
     sun.lookAt(new THREE.Vector3(0, 0, 0));
+
+    water_uniforms.time.value += 0.01; // Update water shader motion.
+
     renderer.render(scene, camera);
 }
