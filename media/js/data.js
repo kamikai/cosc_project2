@@ -533,6 +533,7 @@ BUILDING_DATA = [
             new THREE.Vector2(6, 11),
         ]
     }
+
 ];
 
 LAKE_DATA = [
