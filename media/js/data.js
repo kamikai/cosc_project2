@@ -457,6 +457,61 @@ BUILDING_DATA = [
             new THREE.Vector2(8, 10),
             new THREE.Vector2(10, 19),
         ]
+    },
+    {
+        name: "Building 33",
+        number: 33,
+        levels: 2,
+        position: new THREE.Vector2(1353, 1084),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 36),
+            new THREE.Vector2(38, 24),
+            new THREE.Vector2(6, 3),
+        ]
+    },
+    {
+        name: "Chamberlain Building",
+        number: 35,
+        levels: 3,
+        position: new THREE.Vector2(1177, 857),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 21),
+            new THREE.Vector2(90, 21),
+            new THREE.Vector2(90, 0)
+        ]
+    },
+    {
+        name: "Joyce Ackroyd Building",
+        number: 37,
+        levels: 2,
+        position: new THREE.Vector2(1224, 809),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 18),
+            new THREE.Vector2(63, 18),
+            new THREE.Vector2(63, 0),
+        ]
+    },
+    {
+        name: "Colin Clark Building",
+        number: 39,
+        levels: 4,
+        position: new THREE.Vector2(1169, 759),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(0, 42),
+            new THREE.Vector2(69, 42),
+            new THREE.Vector2(69, 8),
+            new THREE.Vector2(56, 8),
+            new THREE.Vector2(56, 29),
+            new THREE.Vector2(15, 27),
+            new THREE.Vector2(14, 0),
+        ]
     }
 ];
 
