@@ -203,7 +203,7 @@ function load_terrain() {
 
 /**
  * Function to create the sun geometry, and contains a light.
- * @return
+ * @return {THREE.Mesh}
  */
 function load_sun() {
     // Create the yellow ball model.

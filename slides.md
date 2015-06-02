@@ -42,16 +42,16 @@ Note: Not a direct continuation of previous topic, just the theme.
 
 
 ## Main Techniques
-- Modeling.
-    - Mesh Hierarchies
-    - Positioning / Scaling / Rotating
-- Texturing & Lighting
-    - Texture and bump mapping
-    - Shadowing
-    - Skybox
-    - Shaders
-- Interactivity
-    - Orbit controls (zooming, panning, rotating)
+- Modeling:
+    - Mesh Hierarchies.
+    - Constructive Geometry.
+- Texturing & Lighting:
+    - Texture and Bump mapping.
+    - Shadowing.
+    - Skybox.
+    - Shaders.
+- Interactivity:
+    - Orbit controls (zooming, panning, rotating).
 
 
 ---
