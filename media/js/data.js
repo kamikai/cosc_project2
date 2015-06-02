@@ -17,7 +17,7 @@ BUILDING_DATA = [
     {
         name: "Duhig Tower",
         number: 2,
-        levels: 9,
+        levels: 7,
         position: new THREE.Vector2(1140, 990),
         rotation: 0,
         points: [
@@ -110,7 +110,7 @@ BUILDING_DATA = [
     {
         name: "Michie",
         number: 9,
-        levels: 4,
+        levels: 7,
         position: new THREE.Vector2(830, 985),
         rotation: 0,
         points: [
@@ -337,6 +337,127 @@ BUILDING_DATA = [
             new THREE.Vector2(61, 24),
         ]
     },
+    {
+        name: "UQ Sport Fitness Centre",
+        number: 25,
+        levels: 3,
+        position: new THREE.Vector2(1270, 930),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 76),
+            new THREE.Vector2(33, 97),
+            new THREE.Vector2(85, 19),
+            new THREE.Vector2(51, 0),
+        ]
+    },
+    {
+        name: "Connell Building",
+        number: 26,
+        levels: 2,
+        position: new THREE.Vector2(1294, 845),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 41),
+            new THREE.Vector2(37, 63),
+            new THREE.Vector2(30, 87),
+            new THREE.Vector2(62, 104),
+            new THREE.Vector2(76, 86),
+            new THREE.Vector2(76, 53),
+            new THREE.Vector2(59, 44),
+            new THREE.Vector2(61, 40),
+            new THREE.Vector2(84, 51),
+            new THREE.Vector2(90, 41),
+            new THREE.Vector2(27, 0),
+            new THREE.Vector2(18, 9),
+            new THREE.Vector2(57, 38),
+            new THREE.Vector2(56, 44),
+            new THREE.Vector2(18, 23),
+        ]
+    },
+    {
+        name: "UQ Centre",
+        number: 27,
+        levels: 3,
+        position: new THREE.Vector2(1330, 937),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 117),
+            new THREE.Vector2(49, 137),
+            new THREE.Vector2(110, 39),
+            new THREE.Vector2(71, 0),
+            new THREE.Vector2(67, 6),
+            new THREE.Vector2(60, 0),
+            new THREE.Vector2(15, 68),
+            new THREE.Vector2(21, 73),
+        ]
+    },
+    {
+        name: "UQ Tennis Pavilion",
+        number: 28,
+        levels: 1,
+        position: new THREE.Vector2(1323, 778),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 17),
+            new THREE.Vector2(19, 27),
+            new THREE.Vector2(27, 12),
+            new THREE.Vector2(7, 1),
+        ]
+    },
+    {
+        name: "UQ Tennis Centre",
+        number: 29,
+        levels: 1,
+        position: new THREE.Vector2(1295, 759),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 18),
+            new THREE.Vector2(21, 33),
+            new THREE.Vector2(33, 12),
+            new THREE.Vector2(11, 0),
+        ]
+    },
+    {
+        name: "Social Sciences Annexe",
+        number: "37B",
+        levels: 1,
+        position: new THREE.Vector2(1259, 937),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 21),
+            new THREE.Vector2(7, 29),
+            new THREE.Vector2(31, 8),
+            new THREE.Vector2(24, 0),
+        ]
+    },
+    {
+        name: "ISSR Research Hub",
+        number: "31B",
+        levels: 1,
+        position: new THREE.Vector2(1281, 916),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 10),
+            new THREE.Vector2(24, 23),
+            new THREE.Vector2(28, 14),
+            new THREE.Vector2(4, 0),
+        ]
+    },
+    {
+        name: "Gordon Greenwood Building",
+        number: 32,
+        levels: 5,
+        position: new THREE.Vector2(1254, 1016),
+        rotation: 0,
+        points: [
+            new THREE.Vector2(0, 35),
+            new THREE.Vector2(24, 49),
+            new THREE.Vector2(46, 19),
+            new THREE.Vector2(16, 0),
+            new THREE.Vector2(8, 10),
+            new THREE.Vector2(10, 19),
+        ]
+    }
 ];
 
 LAKE_DATA = [
