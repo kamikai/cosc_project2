@@ -6,6 +6,7 @@
 var container, stats;
 var camera, controls, scene, renderer;
 var buildings, sun, skybox;
+var water_uniforms;
 
 var settings = {
     width: window.innerWidth,
@@ -117,7 +118,7 @@ function load_buildings () {
  */
 function load_terrain() {
     var grass_repeats = 1000,
-        grass_tex = THREE.ImageUtils.loadTexture('media/images/grass.jpg');
+        grass_tex = THREE.ImageUtils.loadTexture('media/images/terrain/grass.jpg');
     grass_tex.wrapS = grass_tex.wrapT = THREE.RepeatWrapping;
     grass_tex.repeat.set(grass_repeats, grass_repeats);
 

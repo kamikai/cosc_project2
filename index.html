@@ -11,15 +11,31 @@
     <script type="application/javascript" src="bower_components/tweenjs/build/tween.min.js"></script>
 
     <script type="x-shader/x-vertex" id="water-vertex-shader">
-        void main() {
-            gl_Position = projectionMatrix *
-                            modelViewMatrix *
-                            vec4(position,1.0);
+        varying vec2 vUv;
+        void main()
+        {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }
     </script>
     <script type="x-shader/x-fragment" id="water-fragment-shader">
-        void main() {
-            gl_FragColor = vec4(0.0, 0.5, 1.0, 1.0);
+        uniform sampler2D waterTexture;
+        uniform float waterSpeed;
+        uniform sampler2D noiseTexture;
+        uniform float noiseScale;
+        uniform float alpha;
+        uniform float time;
+
+        varying vec2 vUv;
+        void main()
+        {
+            vec2 uvTimeShift = vUv + vec2(-0.7, 1.5) * time * waterSpeed;
+            vec4 noiseGeneratorTimeShift = texture2D(noiseTexture, uvTimeShift);
+            vec2 uvNoiseTimeShift = vUv + noiseScale * vec2(noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b);
+            vec4 baseColor = texture2D(waterTexture, uvNoiseTimeShift);
+
+            baseColor.a = alpha;
+            gl_FragColor = baseColor;
         }
 </script>
 
