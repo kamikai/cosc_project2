@@ -5,15 +5,17 @@
 % ============
 
     % Package Imports
+        \usepackage[bottom]{footmisc}  % Force footnotes to the bottom of page.
+        \usepackage[margin=2cm]{geometry}
         \usepackage[nottoc,numbib]{tocbibind}
+        \usepackage[T1]{fontenc}  % Set encoding to correct ASCII.
         \usepackage{blindtext}
         \usepackage{float}  % Force image insertion position.
-        \usepackage{graphicx}
+        \usepackage{graphicx}  % Allow image insertion.
         \usepackage{hyperref}  % Use URLs (for bibliography).
+        \usepackage{minted}  % Provide syntax highlighting for code snippets.
         \usepackage{pdftexcmds}
-        \usepackage{minted}
         \usepackage{titlesec}
-        \usepackage[margin=2cm]{geometry}
 
     % Other Stuff
         \graphicspath{ {media/} } % Specify path to content.

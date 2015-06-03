@@ -1,15 +1,127 @@
 \section{Methods} % (fold)
 \label{sec:methods}
-    \begin{minted}[linenos,frame=lines,gobble=8]{javascript}
-        /**
-         * Initialise the buildings in the world.
-         * @return A THREE.Group, containing meshes for the buildings in the world.
-         */
-        function load_buildings() {
-            var buildings = new THREE.Group();
-            return buildings
-        }
-    \end{minted}
-% section methods (end)
 
-fascia
+    \subsection{Technical Overview} % (fold)
+    \label{sub:technical_overview}
+        The project was implemented using the graphics capabilities of modern browsers, primarily through the three.js JavaScript library, and GLSL shaders.
+        The main features incorporated include:
+        \begin{itemize}
+            \item Mouse interactivity.
+            \item Texture and bump mapping.
+            \item Dynamic model creation.
+            \item Lighting and shadow casting.
+            \item Animation.
+            \item Constructive geometry.
+            \item GLSL shaders.
+        \end{itemize}
+    % subsection technical_overview (end)
+
+    \subsection{Graphics Environment: WebGL and Three.js} % (fold)
+    \label{sub:graphics_environment_webgl_and_three_js}
+        The project was done using WebGL, an implementation of the OpenGL specification used with in modern web browsers.
+        WebGL is designed as a rendering context for the HTML Canvas element \cite{khronos_webgl}.
+        The rationale for using WebGL was based around the portability of web pages, and the ubiquity of web browsers.
+        Equivalent OpenGL projects written in C have more complex and fragile requirements, such as a compilers, library headers, and platform specific binaries; and Python requires similar dependencies and suffers reduced performance in addition.\\
+
+        In order to access the browsers rendering capabilities, the \textit{three.js} JavaScript library was used, as it is well documented, and has an extensive corpus of examples online.
+        It provides a programming environment well suited for graphics programming in JavaScript.
+        While JavaScript is more object orientated than the venerable C bindings for OpenGL, it maintains a close equivalence to native GL instructions, with a cleaned up API and astute use of flexible JavaScript objects\footnote{`\textit{JSON}' is also often used, it stands for JavaScript Object Notation, and is a useful data serialisation format}.
+    % subsection graphics_environment_webgl_and_three_js (end)
+
+    \subsection{Features} % (fold)
+    \label{sub:features}
+        \subsubsection{Mouse interactivity} % (fold)
+        \label{ssub:mouse_interactivity}
+            A major usability feature of the application is the implementation of the so called `Orbit' controls, which allow users to pan, zoom and rotate the camera around the scene naturally using a mouse.
+            Mouse interaction is facilitated by registering event callbacks for the main canvas DOM\footnote{Document Object Model, the tree of HTML elements that comprise a webpage.} element within JavaScript to fire for different input methods.
+            For example, a function can be registered for a mouse-drag event;  should a mouse drag event occur, that function can determine how far the mouse's position has changed with respect to the $x$ and $y$ dimensions, and can manipulate the cameras position to simulate a panning motion.\\
+
+            Earlier versions of the project had a this implemented simply, however later mouse controls were delegated to the better performing and more natural `Orbit Controls' library \cite{three_orbit}, which provides simple configuration for $y+$ (always vertical) camera controls, including panning, zooming, and rotating (Added in commit \texttt{37bc245}, see reference \cite{cranny_src}).
+
+        % subsubsection mouse_interactivity (end)
+
+        \subsubsection{Texture and bump mapping} % (fold)
+        \label{ssub:texture_and_bump_mapping}
+            Textures were used for most of the geometry for the scene in different ways.
+            This includes the buildings, ground, water, and the skybox.
+
+            \paragraph{The Ground} % (fold)
+            \label{par:the_ground}
+                has the simplest texturing in the scene.
+                It has a grass image applied to it, using repeat S and T wrapping to create a continuous ``grassy'' surface.
+                A fairly low specular value was used, due to it's lack of reflectivity in real life.
+            % paragraph the_ground (end)
+
+            \paragraph{The Buildings} % (fold)
+            \label{par:the_buildings}
+                in the scene have both a texture and a bump map applied.
+                The bump map is of a simple tessellating brick pattern, and the texture is an image of varying sandstone patterns.
+                The sandstone textures were created by assembling sections of photographs taken on campus specifically for this project.\\
+
+                The combination of sandstone and a brick bump map is obviously utilised to simulate the actual sandstone bricks that buildings at UQ are famously constructed from.
+            % paragraph the_buildings (end)
+
+            \paragraph{The Skybox} % (fold)
+            \label{par:the_skybox}
+                utilises six textures of a cloudy sky, projected onto the interior of a large cube surrounding the scene in order to produce a realistic sky effect.
+                A special purpose built-in shader is used to handle flipping the normals of the skybox cubes face, so the inside surface of the cube is visible instead of the outside.
+                The shader also serves to illuminate the sky textures so they are still visible at great distances, and map the images to the correct location and rotation so that it appears seamless.
+            % paragraph the_skybox (end)
+            
+            \paragraph{The Water} % (fold)
+            \label{par:the_water}
+                of the UQ lakes and Brisbane River utilise a texture of caustic water map.
+                The water however is a special case, as the texture is processed and manipulated via a GLSL shader, which provides a subtle rippling or wavy effect on the water surface.
+                See \ref{ssub:glsl_shaders} below for more information on the shaders behaviour.
+            % paragraph the_water (end)
+        % subsubsection texture_and_bump_mapping (end)
+
+        \subsubsection{Dynamic model creation} % (fold)
+        \label{ssub:dynamic_model_creation}
+            In order to specify and generate the buildings and water bodies of the model efficiently, a dynamic approach to model initialisation was taken.
+            The process involves defining an arbitrary set of anticlockwise points for the ``footprint'' of each building and lake.
+            This information is stored in the \texttt{data.js} JavaScript file, and also defines for each building the position, rotation, name, building number, and height.\\
+
+            In the case of buildings, each in the dataset is iterated, and a two-dimensional shape is constructed from the array of footprint points.
+            Then, that polygon is extruded vertically by a factor of that buildings height.\\
+
+            This allowed for moderately fast input of the buildings and water bodies into the model, as only a position, height (for buildings), and small set of points was required to define each feature.\\
+
+            The initialisation of the water bodies is more complicated, as first geometry is subtracted away from the terrain to allow room for a water surface to appear below the level of the terrain, and then a shader is initialised to produce the rippling water effect on the water surface meshes. See \ref{ssub:constructive_geometry} and \ref{ssub:glsl_shaders} for further information on the geometry and shaders respectively.
+
+        % subsubsection dynamic_model_creation (end)
+
+        \subsubsection{Lighting and shadow casting} % (fold)
+        \label{ssub:lighting_and_shadow_casting}
+            
+        % subsubsection lighting_and_shadow_casting (end)
+
+        \subsubsection{Animation} % (fold)
+        \label{ssub:animation}
+            
+        % subsubsection animation (end)
+
+        \subsubsection{Constructive geometry} % (fold)
+        \label{ssub:constructive_geometry}
+            
+        % subsubsection constructive_geometry (end)
+
+        \subsubsection{GLSL shaders} % (fold)
+        \label{ssub:glsl_shaders}
+            
+        % subsubsection glsl_shaders (end)
+
+
+    % subsection features (end)
+
+    % \begin{minted}[linenos,frame=lines,gobble=8]{javascript}
+    %     /**
+    %      * Initialise the buildings in the world.
+    %      * @return A THREE.Group, containing meshes for the buildings in the world.
+    %      */
+    %     function load_buildings() {
+    %         var buildings = new THREE.Group();
+    %         return buildings
+    %     }
+    % \end{minted}
+% section methods (end)
