@@ -32,7 +32,7 @@
     \label{sub:features}
         \subsubsection{Mouse interactivity} % (fold)
         \label{ssub:mouse_interactivity}
-            A major usability feature of the application is the implementation of the so called `Orbit' controls, which allow users to pan, zoom and rotate the camera around the scene naturally using a mouse.
+            A major usability feature of the application is the implementation of `Orbit' controls, which allow users to pan, zoom, and rotate the camera around the scene naturally using a mouse.
             Mouse interaction is facilitated by registering event callbacks for the main canvas DOM\footnote{Document Object Model, the tree of HTML elements that comprise a webpage.} element within JavaScript to fire for different input methods.
             For example, a function can be registered for a mouse-drag event;  should a mouse drag event occur, that function can determine how far the mouse's position has changed with respect to the $x$ and $y$ dimensions, and can manipulate the cameras position to simulate a panning motion.\\
 
@@ -56,9 +56,8 @@
             \label{par:the_buildings}
                 in the scene have both a texture and a bump map applied.
                 The bump map is of a simple tessellating brick pattern, and the texture is an image of varying sandstone patterns.
-                The sandstone textures were created by assembling sections of photographs taken on campus specifically for this project.\\
-
-                The combination of sandstone and a brick bump map is obviously utilised to simulate the actual sandstone bricks that buildings at UQ are famously constructed from.
+                The sandstone textures were created by assembling sections of photographs taken on campus specifically for this project.
+                The combination of sandstone and a brick bump map is obviously utilised to simulate the actual sandstone bricks that buildings at UQ are famously constructed from, and produces a believable three-dimensional brick effect for surface of the buildings when inspected.
             % paragraph the_buildings (end)
 
             \paragraph{The Skybox} % (fold)
@@ -67,7 +66,7 @@
                 A special purpose built-in shader is used to handle flipping the normals of the skybox cubes face, so the inside surface of the cube is visible instead of the outside.
                 The shader also serves to illuminate the sky textures so they are still visible at great distances, and map the images to the correct location and rotation so that it appears seamless.
             % paragraph the_skybox (end)
-            
+
             \paragraph{The Water} % (fold)
             \label{par:the_water}
                 of the UQ lakes and Brisbane River utilise a texture of caustic water map.
@@ -83,8 +82,7 @@
             This information is stored in the \texttt{data.js} JavaScript file, and also defines for each building the position, rotation, name, building number, and height.\\
 
             In the case of buildings, each in the dataset is iterated, and a two-dimensional shape is constructed from the array of footprint points.
-            Then, that polygon is extruded vertically by a factor of that buildings height.\\
-
+            Then, that polygon is extruded vertically by a factor of that buildings height.
             This allowed for moderately fast input of the buildings and water bodies into the model, as only a position, height (for buildings), and small set of points was required to define each feature.\\
 
             The initialisation of the water bodies is more complicated, as first geometry is subtracted away from the terrain to allow room for a water surface to appear below the level of the terrain, and then a shader is initialised to produce the rippling water effect on the water surface meshes. See \ref{ssub:constructive_geometry} and \ref{ssub:glsl_shaders} for further information on the geometry and shaders respectively.
@@ -93,35 +91,101 @@
 
         \subsubsection{Lighting and shadow casting} % (fold)
         \label{ssub:lighting_and_shadow_casting}
-            
+            The scene is lit using a variety of techniques.
+            Firstly, there is a low level ambient light used.
+            This provides a small amount of illumination to all objects in the scene.
+            This serves to lessen the harsher shadows of direct lighting, and ensures darker parts of the scene are visible and not completely black.\\
+
+            The scene also has what is called ``hemispherical'' illumination applied, which is a useful technique for simulating light sources at optical infinity with an underlying plane present.
+            In effect, this means it is well suited to simulating sunlight that also artificially reflects the colour of the ground.
+            This was used to provide a soft yellow sunlight effect from above the scene, and a subtle green diffuse reflection coming from the bottom of the scene, to simulate a diffuse reflection of the grass.
+            This is best observed on the downward facing normals of the bump mapped bricks, which the buildings are textures with (see figure \texttt{TODO}).\\
+
+            The final light source of the scene was a directional light, which was emitted from above and off to the side of the model.
+            This light was centred within a small yellow sphere with an emissive yellow colouring to simulate a sun.
+            The light and sphere also rotated around the scene, and moved up and down as well.
+            When running, buildings would therefore constantly cast a moving shadow that also changed length with the rotation and angle of the ``sun'' object.
+
         % subsubsection lighting_and_shadow_casting (end)
 
         \subsubsection{Animation} % (fold)
         \label{ssub:animation}
-            
+            The project incorporated a few minor animation techniques, primarily the movement of the sun and related directional light, and the ``growing'' animation of the buildings when the model is first loaded.\\
+
+            When the web page containing the model program loads, all of the buildings appear to ``grow'' out of the ground over the course of the first five seconds to their full height, regardless of how many levels the structure contains.
+            This effect is performed by scaling the $y$ dimension of each building by a factor of the time the animation has been running divided by 5 seconds.
+            This is obviously stopped after 5 seconds have passed, so the buildings do not continue to grow past their intended heights.\\
+
+            The other form of animation present is the rotation and bobbing of the sun mesh and light source.
+            The small sphere representing the sun, continually rotates around the model, and changes its height according to a periodic function.
+            This animation exists to convey the dynamic lighting and shadowing effects utilised to the user.
         % subsubsection animation (end)
 
         \subsubsection{Constructive geometry} % (fold)
         \label{ssub:constructive_geometry}
-            
+            In order to simulate the appearance of bodies of water more accurately, a volume below the area of each lake\footnote{The Brisbane river is also included as a body of water, the term ``lake'' is just used for simplicity.} covered was removed using the subtraction method of constructive solid geometry.
+            In order to accomplish this, a polygon is created within the footprint of the lake.
+            Similarly to the buildings, the base polygon is extruded in the $y$ dimension to create a three-dimensional volume mesh, however in this case it is by a small amount downwards.
+            Using a CSG library, that mesh is then subtracted from the ground mesh it overlaps with, providing a cut out depression in the shape of the lake.
+            Then a two-dimensional clone of the initial polygon mesh is put in place, slightly lowered and textured to act as a water surface.
         % subsubsection constructive_geometry (end)
 
         \subsubsection{GLSL shaders} % (fold)
         \label{ssub:glsl_shaders}
-            
+            Shaders are independent programs that can be compiled and run when a graphics program is initialised.
+            The two major types are vertex and fragment shaders, which respectively are able to modify vertices and pixel colouring data of their input at a very late stage of the rendering process.
+            Shaders are therefore a component in the utilisation of a programmable pipeline, and allow for very powerful effects to be made relatively simply.\\
+
+            In this project, a vertex and a fragment shader were written in GLSL, the OpenGL Shader Language, and used to manipulate the surfaces of the bodies of water.
+            The main effect achieved was to provide a ripple effect on the surface of the water, and move and manipulate a texture to simulate the appearance of water in a better fashion.\\
+
+            The two shaders used are quite small, particularly the vertex shader, as the vertices of the perimeter of the lakes are not manipulated.
+            The fragment shader however manipulates a texture of water, by using an image of Perlin noise, and a offsets it by a function of time and the red and blue colour channels of the noise map.
+            The image textures and the time value are given to the vertex shader as \texttt{uniforms}, which are initialised by the parent program for each render pass. See Figure~\ref{fig:water} for a screenshot of the end result, and Listing~\ref{lst:water_fragment_shader} to view the GLSL code used to acheive the effect.
+
+            \begin{figure}[H]
+                \centering
+                \fbox{\includegraphics[width=0.75\textwidth]{water}}
+                \caption{
+                    Screenshot of water in the ``Brisbane River''.
+                    When running, the water surface appears to ripple and shimmer semi-realistically, because of a fragment shader.
+                }
+                \label{fig:water}
+            \end{figure}
+
+            \begin{listing}[H]
+                \begin{minted}[linenos,frame=lines,gobble=20]{glsl}
+                    // Uniform variables, provided by parent program.
+                    uniform sampler2D waterTexture;
+                    uniform float waterSpeed;
+                    uniform sampler2D noiseTexture;
+                    uniform float noiseScale;
+                    uniform float alpha;
+                    uniform float time;
+
+                    varying vec2 vUv; // UV coordinates, shared by prior initialised vertex shader.
+
+                    void main() {
+                        // Scale S and T coordinates for better wrapping.
+                        vec2 repeats = vec2(0.05, 0.05);
+                        // Create a vector to offset the texture by based on time.
+                        vec2 uvTimeShift = vUv + vec2(-0.5, 1.5) * time * waterSpeed;
+                        // Sample the noise map, by time manipulated coordinate.
+                        vec4 noiseGeneratorTimeShift = texture2D(noiseTexture, uvTimeShift);
+                        // Determine shift by red and blue channels of noise sample.
+                        vec2 uvNoiseTimeShift = vUv + noiseScale *
+                            vec2(noiseGeneratorTimeShift.r, noiseGeneratorTimeShift.b);
+                        // Calculate the final colour for the pixel, by sampling from the original.
+                        vec4 baseColor = texture2D(waterTexture, uvNoiseTimeShift * repeats);
+
+                        baseColor.a = alpha; // Set the pixel to the specified transparency.
+                        gl_FragColor = baseColor; // Update the output pixels colour.
+                    }
+
+                \end{minted}
+                \caption{The GLSL source of the water fragment shader. Lines \texttt{22-42}, \texttt{index.html}}
+                \label{lst:water_fragment_shader}
+            \end{listing}
         % subsubsection glsl_shaders (end)
-
-
     % subsection features (end)
-
-    % \begin{minted}[linenos,frame=lines,gobble=8]{javascript}
-    %     /**
-    %      * Initialise the buildings in the world.
-    %      * @return A THREE.Group, containing meshes for the buildings in the world.
-    %      */
-    %     function load_buildings() {
-    %         var buildings = new THREE.Group();
-    %         return buildings
-    %     }
-    % \end{minted}
 % section methods (end)
