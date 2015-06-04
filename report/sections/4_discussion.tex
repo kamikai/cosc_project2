@@ -1,4 +1,65 @@
 \section{Discussion} % (fold)
 \label{sec:discussion}
-    Here be dragons!
+    \subsection{Summary} % (fold)
+    \label{sub:summary}
+        Overall, the project is successful at conveying a three-dimensional representation of the UQ St Lucia campus to a user.
+        The goal of this project was to provide a useful and intuitive model for users to observe and understand a lot of the major positional and structural layout of the campus, and it serves to this effect rather well.\\
+
+        Multiple graphical concepts were explored and utilised together to produce the final product, including texturing, lighting, modelling, constructive solid geometry, programmable pipeline shaders, and animation.
+        The model is also easily extensible, it allows for the addition of arbitrary buildings and bodies of water to be added easily.
+        Consequently, the model could be re-purposed for just about any set of structures, the code base is in no way specifically only for UQ St Lucia.
+    % subsection summary (end)
+
+    \subsection{Excluded Features} % (fold)
+    \label{sub:excluded_features}
+        There were a small set of features that were being considered to be added to the project, some of which never got implemented, and others that were implemented and only got discarded late in the project.
+        The list of potential features that did not end up in the project are:
+
+        \paragraph{Building Selections} % (fold)
+        \label{par:building_selections}
+            Conceptually easy to implement, by following an example located at
+            \href{http://threejs.org/examples/#webgl_interactive_cubes}{http://threejs.org/examples/\#webgl{\textunderscore}interactive{\textunderscore}cube}, using ray casts and intersection logic.
+            Had this of been implemented, buildings could have of been highlighted and an information displayed when the user moused over them.
+            This feature was not incorporated due to time constraints and favouring the (hopefully) more valuable GLSL shaders.\\
+
+            Existing in the code too however, disabled by a simple setting for performance reasons, is the option to enable the floors of buildings to exist as separate meshes, allowing them to potentially be manipulated individually in some useful manner later.
+        % paragraph building_selections (end)\
+
+        \paragraph{Day-Night Cycle} % (fold)
+        \label{par:day_night_cycle}
+            A feature planned since the initial proposal, it would simply have the sun ``set'' regularly, and the illumination would change to reflect that.
+            There was limited benefit to implementing this, and early experiments proved that realistic night time illumination requires more complex lighting, such as large amounts of weak lights to simulate artificial light sources.
+            This also become less feasible after the skybox was implemented, as transitioning that became non-trivial.
+            This feature however is the reason a separate sun object exists orbiting the scene, apparently contradicting the sun textured in the skybox.
+        % paragraph day_night_cycle (end)
+
+        \paragraph{Class Identification} % (fold)
+        \label{par:class_identification}
+            Extending the idea of building selections and a day night cycle, an idea was considered to have the user enter a course code, and watch the campus over the course of a week as the rooms a course occupied flashed to show when and where classes where being held.
+            Obviously not implemented due to time and technical limitations.
+        % paragraph class_identification (end)
+
+    % subsection abandoned_features (end)
+
+    \subsection{Future Improvements} % (fold)
+    \label{sub:excluded_improvements}
+        This section could list just about any concept, however, the several most value adding future changes that could be reasonably added are listed.
+
+        \paragraph{Texture Improvements} % (fold)
+        \label{par:better_texturing}
+            Most buildings at UQ are not actually sandstone, and have more complex surfaces than just a tessellating texture. Meaningful work could be done to vary and produce better quality and positioned textures.
+        % paragraph better_texturing (end)
+
+        \paragraph{Modelling Improvements} % (fold)
+        \label{par:modelling_improvements}
+            Likewise, most buildings are not in the form of polygons extruded directly out of the ground.
+            Features such as arches, balconies, windows, bridges, e.t.c could be incorporated for a much more realistic model.
+        % paragraph modelling_improvements (end)
+
+        \paragraph{More Buildings} % (fold)
+        \label{par:more_buildings}
+            UQ has a lot. Adding them gets boring.
+        % paragraph more_buildings (end)
+
+    % subsection future_improvements (end)
 % section discussion (end)

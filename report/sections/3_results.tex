@@ -55,7 +55,7 @@
         Having moving shadows, and correctly lit surfaces is very useful for the users depth perception and the believability of the model.
 
         If the scene is observed for even a small length of time, it becomes apparent that the shadows are moving around the buildings in a circular fashion, and also changing lengths.
-        The shadows cast by the buildings definitely contribute to improving the quality of the scene.
+        The shadows cast by the buildings definitely contribute to improving the quality of the scene (see Figure~\ref{fig:shadows}).
 
         \begin{figure}[H]
             \centering
@@ -68,7 +68,31 @@
 
         A more subtle lighting phenomena is the simulation of a diffuse reflection from the grass onto the bump mapped bricks.
         This is caused by the hemispherical lighting used to simulate sunlight.
-        What is seen is a
+        What is seen is a faint green reflection on the downward facing normals of the bump mapped brick textures (see Figure~\ref{fig:bump_and_hemisphere}).
 
+        \begin{figure}[H]
+            \centering
+            \fbox{\includegraphics[width=\textwidth]{bump_and_hemisphere}}
+            \caption{
+                Side on screenshot of sandstone bricks. Note the green colouration to the underside of the brick edges, simulating a diffuse reflection from the grass.
+            }
+            \label{fig:bump_and_hemisphere}
+        \end{figure}
     % subsection lighting (end)
+
+    \subsection{Shader Output} % (fold)
+    \label{sub:shader_output}
+        By using a vertex and fragment shader written in GLSL, the quality and performance of the water rendering is very high quality.
+        The water appears to shimmer and ripple quite believably, and the transparency assists greatly in providing a perception of depth.
+
+        \begin{figure}[H]
+            \centering
+            \fbox{\includegraphics[width=0.75\textwidth]{water}}
+            \caption{
+                Screenshot of water in the ``Brisbane River''.
+                When running, the water surface appears to ripple and shimmer semi-realistically, due to fragment shading.
+            }
+            \label{fig:water}
+        \end{figure}
+    % subsection shader_output (end)
 % section results (end)

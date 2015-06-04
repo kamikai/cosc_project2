@@ -99,7 +99,7 @@
             The scene also has what is called ``hemispherical'' illumination applied, which is a useful technique for simulating light sources at optical infinity with an underlying plane present.
             In effect, this means it is well suited to simulating sunlight that also artificially reflects the colour of the ground.
             This was used to provide a soft yellow sunlight effect from above the scene, and a subtle green diffuse reflection coming from the bottom of the scene, to simulate a diffuse reflection of the grass.
-            This is best observed on the downward facing normals of the bump mapped bricks, which the buildings are textures with (see figure \texttt{TODO}).\\
+            This is best observed on the downward facing normals of the bump mapped bricks, which the buildings are textured with.\\
 
             The final light source of the scene was a directional light, which was emitted from above and off to the side of the model.
             This light was centred within a small yellow sphere with an emissive yellow colouring to simulate a sun.
@@ -142,16 +142,6 @@
             The two shaders used are quite small, particularly the vertex shader, as the vertices of the perimeter of the lakes are not manipulated.
             The fragment shader however manipulates a texture of water, by using an image of Perlin noise, and a offsets it by a function of time and the red and blue colour channels of the noise map.
             The image textures and the time value are given to the vertex shader as \texttt{uniforms}, which are initialised by the parent program for each render pass. See Figure~\ref{fig:water} for a screenshot of the end result, and Listing~\ref{lst:water_fragment_shader} to view the GLSL code used to acheive the effect.
-
-            \begin{figure}[H]
-                \centering
-                \fbox{\includegraphics[width=0.75\textwidth]{water}}
-                \caption{
-                    Screenshot of water in the ``Brisbane River''.
-                    When running, the water surface appears to ripple and shimmer semi-realistically, because of a fragment shader.
-                }
-                \label{fig:water}
-            \end{figure}
 
             \begin{listing}[H]
                 \begin{minted}[linenos,frame=lines,gobble=20]{glsl}
